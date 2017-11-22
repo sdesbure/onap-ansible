@@ -1,0 +1,25 @@
+---
+stages:
+  - test
+
+.syntax_checking: &syntax_docker
+  stage: test
+  tags:
+    - shared
+    - docker
+    - innovation
+
+yaml_checking:
+  image: dockerproxy-iva.si.francetelecom.fr/sdesbure/yamllint:latest
+  script:
+    - yamllint .gitlab-ci.yml
+    - yamllint *.y?ml
+    - yamllint vars/*.y?ml
+    - yamllint roles/*/tasks/*.y?ml
+  <<: *syntax_docker
+
+ansible_linting:
+  image: dockerproxy-iva.si.francetelecom.fr/sdesbure/ansible-lint:latest
+  script:
+    - ansible-lint -x ANSIBLE0010,ANSIBLE0013 onap-*.yml
+  <<: *syntax_docker

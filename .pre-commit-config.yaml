@@ -1,0 +1,15 @@
+---
+- repo: https://github.com/willthames/ansible-lint.git
+  sha: v3.4.17
+  hooks:
+    - id: ansible-lint
+      args: [-x, "ANSIBLE0010,ANSIBLE0013"]
+- repo: https://github.com/adrienverge/yamllint.git
+  sha: v1.10.0
+  hooks:
+    - id: yamllint
+      name: yamllint
+      description: This hook runs yamllint.
+      entry: yamllint
+      language: python
+      files: \.(yaml|yml)$
