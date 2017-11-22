@@ -1,6 +1,7 @@
 ---
 stages:
   - test
+  - deploy
 
 .syntax_checking: &syntax_docker
   stage: test
@@ -23,3 +24,20 @@ ansible_linting:
   script:
     - ansible-lint -x ANSIBLE0010,ANSIBLE0013 onap-*.yml
   <<: *syntax_docker
+
+
+pages:
+  stage: deploy
+  image: dockerproxy-iva.si.francetelecom.fr/jekyll/jekyll:latest
+  tags:
+    - shared
+    - innovation
+    - docker
+  script:
+    - cd doc
+    - jekyll build -d ../public
+  only:
+    - master
+  artifacts:
+    paths:
+      - public
