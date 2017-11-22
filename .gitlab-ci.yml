@@ -16,7 +16,6 @@ yaml_checking:
     - yamllint .gitlab-ci.yml
     - yamllint *.yml
     - yamllint vars/*.yml
-    - yamllint roles/*/tasks/*.yml
   <<: *syntax_docker
 
 ansible_linting:
