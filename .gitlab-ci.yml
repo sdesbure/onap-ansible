@@ -14,9 +14,9 @@ yaml_checking:
   image: dockerproxy-iva.si.francetelecom.fr/sdesbure/yamllint:latest
   script:
     - yamllint .gitlab-ci.yml
-    - yamllint *.y?ml
-    - yamllint vars/*.y?ml
-    - yamllint roles/*/tasks/*.y?ml
+    - yamllint *.yml
+    - yamllint vars/*.yml
+    - yamllint roles/*/tasks/*.yml
   <<: *syntax_docker
 
 ansible_linting:
@@ -24,7 +24,6 @@ ansible_linting:
   script:
     - ansible-lint -x ANSIBLE0010,ANSIBLE0013 onap-*.yml
   <<: *syntax_docker
-
 
 pages:
   stage: deploy
