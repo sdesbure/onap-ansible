@@ -14,14 +14,14 @@ yaml_checking:
   image: dockerproxy-iva.si.francetelecom.fr/sdesbure/yamllint:latest
   script:
     - yamllint .gitlab-ci.yml
-    - yamllint *.yml
-    - yamllint vars/*.yml
+    - yamllint playbooks/*.yml
+    - yamllint playbooks/vars/*.yml
   <<: *syntax_docker
 
 ansible_linting:
   image: dockerproxy-iva.si.francetelecom.fr/sdesbure/ansible-lint:latest
   script:
-    - ansible-lint -x ANSIBLE0010,ANSIBLE0013 onap-*.yml
+    - ansible-lint -x ANSIBLE0010,ANSIBLE0013 playbooks/onap-*.yml
   <<: *syntax_docker
 
 # pages:
