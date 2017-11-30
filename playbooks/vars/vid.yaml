@@ -1,0 +1,15 @@
+---
+onap_module_name: vid
+
+vid_docker: openecomp/vid
+vid_version: v1.1.0
+
+maria_name: vid-mariadb
+maria_image: mariadb:10
+
+mysql_db: vid_openecomp_epsdk
+maria_user: vidadmin
+maria_password: 12dsf4!!*wxvsknjJJFBHBCd
+db_root_password: sdf6(-dtuFygH*js5v487)
+
+config_path: /home/ubuntu

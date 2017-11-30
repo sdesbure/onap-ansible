@@ -1,0 +1,69 @@
+---
+  # tasks file for roles/prepare_test
+
+#
+- name: apt update and install packages
+  apt: name={{item}} state=installed
+  with_items:
+    - git
+    - python-pip
+
+- name: Import Docker CE repository gpg key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+
+- name: Add Docker CE repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable"
+    state: present
+
+- name: Install Docker CE
+  apt:
+    name: docker-ce
+    state: present
+  update_cache: yes
+
+- pip:
+    name: docker-py
+
+- git:
+    repo: 'https://git.onap.org/vid'
+    dest: "{{ config_path }}/vid"
+
+
+- name: Start maria DB container
+  docker_container:
+    name: "{{maria_name}}"
+    image: "{{maria_image}}"
+    state: started
+    env:
+      MYSQL_DATABASE: "{{mysql_db}}"
+      MYSQL_USER: "{{maria_user}}"
+      MYSQL_PASSWORD: "{{maria_password}}"
+      MYSQL_ROOT_PASSWORD: "{{db_root_password}}"
+    volumes:
+      - "{{config_path}}/vid/lf_config/vid-my.cnf:/etc/mysql/my.cnf"
+      - "{{config_path}}/vid/lf_config/vid-pre-init.sql:/docker-entrypoint-initdb.d/vid-pre-init.sql"
+      - /var/lib/mysql
+
+- name: Log into private ONAP registry
+  docker_login:
+    registry: "{{ nexus_docker_repo }}"
+    username: "{{ nexus_username }}"
+    password: "{{ nexus_password }}"
+    reauthorize: yes
+
+- name: Start vid image
+  docker_container:
+    name: vid-server
+    image: "{{nexus_docker_repo}}/{{vid_docker}}:{{vid_version}}"
+    state: started
+    env:
+      VID_MYSQL_DBNAME: "{{ mysql_db }}"
+      VID_MYSQL_PASS: "{{maria_password}}"
+    ports:
+      - "8080:8080"
+    links:
+     - "vid-mariadb:vid-mariadb-docker-instance"
