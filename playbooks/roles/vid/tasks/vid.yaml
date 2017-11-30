@@ -2,11 +2,16 @@
   # tasks file for roles/prepare_test
 
 #
+- name: Configure resolvconf
+  lineinfile:
+    dest: /etc/resolv.conf
+    line: 'nameserver 8.8.8.8'
+
 - name: apt update and install packages
   apt: name={{item}} state=installed
   with_items:
     - git
-    - python-pip
+    - python3-pip
 
 - name: Import Docker CE repository gpg key
   apt_key:
