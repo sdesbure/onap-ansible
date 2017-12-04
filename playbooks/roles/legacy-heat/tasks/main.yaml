@@ -1,0 +1,105 @@
+---
+- name: import needed variables
+  include_tasks: set_facts_when.yaml
+  with_items:
+    - name: openstack_tenant_name
+      env: OS_PROJECT_NAME
+    - name: openstack_username
+      env: OS_USERNAME
+    - name: openstack_api_key
+      env: OS_PASSWORD
+    - name: openstack_region
+      env: OS_REGION_NAME
+    - name: openstack_keystone_url
+      env: OS_AUTH_URL
+
+- name: retrieve openstack tenant facts
+  os_project_facts:
+    name: "{{ openstack_tenant_name }}"
+  register: os_project_facts
+  when: openstack_tenant_id is not defined
+
+- name: set openstack_tenant_id
+  set_fact:
+    openstack_tenant_id:
+      "{{ os_project_facts.ansible_facts.openstack_projects.0.id }}"
+  when: openstack_tenant_id is not defined
+
+- name: retrieve openstack network facts
+  os_networks_facts:
+    name: "{{ public_network_name }}"
+  register: os_networks_facts
+  when: public_network_id is not defined
+
+- name: set public_network_id facts
+  set_fact:
+    public_network_id:
+      "{{ os_networks_facts.ansible_facts.openstack_networks.0.id }}"
+  when: public_network_id is not defined
+
+# We first remove the end '/' if exists and then remove the last part of url
+- name: remove version number in keystone_url if put
+  set_fact:
+    openstack_keystone_url:
+      "{{ openstack_keystone_url[:-1].split('/')[:-1] | join('/') }}"
+  when:
+    (openstack_keystone_url | search('/v2.0')) or
+    (openstack_keystone_url | search('/v3'))
+
+- name: set ip variables if not set
+  set_fact: {"{{ item.1 }}":
+             "{{ (oam_network_cidr | ipaddr('net') |
+                 ipaddr(((item.0 + 10) | string))).split('/') |
+                 list | first }}" }
+  with_indexed_items:
+    - aai1_ip_addr
+    - aai2_ip_addr
+    - appc_ip_addr
+    - dcae_ip_addr
+    - dns_ip_addr
+    - so_ip_addr
+    - mr_ip_addr
+    - policy_ip_addr
+    - portal_ip_addr
+    - robot_ip_addr
+    - sdc_ip_addr
+    - sdnc_ip_addr
+    - vid_ip_addr
+    - clamp_ip_addr
+    - openo_ip_addr
+  when: vars[item] is not defined
+
+- name: retrieve contents for public and private keys
+  include_tasks: retrieve_content.yaml
+  with_items:
+    - name: pub_key
+      path: "{{ pub_key_path }}"
+    - name: dcae_public_key
+      path: "{{ dcae_public_key_path }}"
+    - name: dcae_private_key
+      path: "{{ dcae_private_key_path }}"
+
+- name: "ensure {{ onap_etc_path }} is defined"
+  file:
+    path: "{{ onap_etc_path }}"
+    state: directory
+
+- name: generate env file for heat stack
+  template:
+    src: onap_openstack.env.j2
+    dest: "{{ onap_etc_path }}/onap_openstack.env"
+
+# Not needed but this way you have all at the same place
+- name: copy yaml file for heat stack
+  copy:
+    src: onap_openstack.yaml
+    dest: "{{ onap_etc_path }}/onap_openstack.yaml"
+
+- name: create onap stack
+  register: stack_create
+  os_stack:
+    name: "{{ heat_stack_name }}"
+    state: present
+    template: "{{ onap_etc_path }}/onap_openstack.yaml"
+    environment:
+      - "{{ onap_etc_path }}/onap_openstack.env"

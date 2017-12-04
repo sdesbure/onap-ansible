@@ -1,0 +1,4 @@
+---
+- name: set "{{ item.name }}" if not defined
+  set_fact: { "{{ item.name}}": "{{ ansible_env[item.env] }}" }
+  when: vars[item.name] is not defined

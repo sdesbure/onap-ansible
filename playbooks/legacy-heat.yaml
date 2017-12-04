@@ -1,0 +1,4 @@
+---
+- hosts: jumphost
+  roles:
+    - legacy-heat

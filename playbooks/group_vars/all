@@ -1,0 +1,160 @@
+---
+##
+# Important variables
+##
+# Network
+public_network_name: ext-net
+oam_network_cidr: 192.168.12.0/24
+
+# Images
+default_image: debian-9
+## Used for legacy, will be removed soon
+ubuntu_16_04_image: ubuntu-14.04-daily
+ubuntu_14_04_image: ubuntu-16.04-daily
+centos_7_image: centos-7
+
+# Access
+pub_key_path: "{{ ansible_user_dir }}/.ssh/id_rsa.pub"
+openstack_horizon_url: https://osa.pod4.opnfv.fr/
+
+# DNSaas
+# If set to yes, use multicloud DNSaaS service.
+# If set to no, use the designate present on the Openstack cloud.
+dns_list:
+  - 9.9.9.9
+  - 9.9.10.10
+dnsaas_config_enabled: "no"
+# give the dcae domain where we should register our VMs
+dcae_domain: onap.bzh
+# Put the public and secret key to be used by DCAE
+dcae_public_key_path: "{{ ansible_user_dir }}/.ssh/id_rsa.pub"
+dcae_private_key_path: "{{ ansible_user_dir }}/.ssh/id_rsa"
+
+# Today's ONAP install is just able to deploy on the same openstack
+dnsaas_region: "{{ openstack_region }}"
+dnsaas_keystone_url: "{{ openstack_keystone_url }}"
+dnsaas_tenant_name: "{{ openstack_tenant_name }}"
+dnsaas_username: "{{ openstack_username }}"
+dnsaas_password: "{{ openstack_api_key }}"
+
+# Put the multivim provided keystone API url here if using multicoud DNSaas Service
+dcae_keystone_url: PUT THE MULTIVIM PROVIDED KEYSTONE API URL HERE
+
+
+##
+# check if variables check your
+# environment
+##
+flavor_small: onap.small
+flavor_medium: onap.medium
+flavor_large: onap.large
+flavor_xlarge: onap.xlarge
+flavor_xxlarge: onap.xxlarge
+
+##
+# Other variables
+##
+vm_base_name: onap
+key_name: onap
+heat_stack_name: onap
+onap_etc_path: /opt/onap
+
+##
+# Don't touch unless you know what to do
+##
+
+# Either use these variables or source an openstack rc file
+# openstack_tenant_id:
+# openstack_tenant_name:
+# openstack_username:
+# openstack_api_key:
+openstack_auth_method: password
+openstack_region: RegionOne
+# openstack_keystone_url:
+
+
+# If left commented, addresses will be chosen automatically
+# aai1_ip_addr:
+# aai2_ip_addr:
+# appc_ip_addr:
+# dcae_ip_addr:
+# dns_ip_addr:
+# so_ip_addr:
+# mr_ip_addr:
+# policy_ip_addr:
+# portal_ip_addr:
+# robot_ip_addr:
+# sdc_ip_addr:
+# sdnc_ip_addr:
+# vid_ip_addr:
+# clamp_ip_addr:
+# openo_ip_addr:
+
+nexus_repo: https://nexus.onap.org/content/sites/raw
+nexus_docker_repo: nexus3.onap.org:10001
+nexus_username: docker
+nexus_password: docker
+dmaap_topic: AUTO
+artifacts_version: 1.2.0-SNAPSHOT
+cloud_env: openstack
+
+aai_branch: master
+appc_branch: master
+so_branch: master
+mr_branch: master
+policy_branch: master
+portal_branch: master
+robot_branch: master
+sdc_branch: master
+sdnc_branch: master
+vid_branch: master
+clamp_branch: master
+vnfsdk_branch: master
+
+aai_docker: v1.1.0
+aai_sparky_docker: v1.1.0
+appc_docker: v1.2.0
+so_docker: v1.1.1
+dcae_docker: v1.1.0
+policy_docker: v1.1.1
+portal_docker: v1.3.0
+robot_docker: 1.1-STAGING-latest
+sdc_docker: v1.1.0
+sdnc_docker: v1.2.1
+vid_docker: v1.1.1
+clamp_docker: v1.1.0
+msb_docker: 1.0.0
+mvim_docker: v1.0.0
+uui_docker: v1.0.1
+esr_docker: v1.0.0
+dgbuilder_docker: v0.1.0
+cli_docker: v1.1.0
+
+vfc_nokia_docker: v1.0.2
+vfc_ztevmanagerdriver_docker: v1.0.2
+vfc_ztesdncdriver_docker: v1.0.0
+vfc_vnfres_docker: v1.0.1
+vfc_vnfmgr_docker: v1.0.1
+vfc_vnflcm_docker: v1.0.1
+vfc_resmanagement_docker: v1.0.0
+vfc_nslcm_docker: v1.0.2
+vfc_huawei_docker: v1.0.2
+vfc_jujudriver_docker: v1.0.0
+vfc_gvnfmdriver_docker: v1.0.1
+vfc_emsdriver_docker: v1.0.1
+vfc_catalog_docker: v1.0.2
+vfc_wfengine_mgrservice_docker: v1.0.0
+vfc_wfengine_activiti_docker: v1.0.0
+
+aai_repo: http://gerrit.onap.org/r/aai/test-config
+appc_repo: http://gerrit.onap.org/r/appc/deployment.git
+mr_repo: http://gerrit.onap.org/r/dcae/demo/startup/message-router.git
+so_repo: http://gerrit.onap.org/r/so/docker-config.git
+policy_repo: http://gerrit.onap.org/r/policy/docker.git
+portal_repo: http://gerrit.onap.org/r/portal.git
+robot_repo: http://gerrit.onap.org/r/testsuite/properties.git
+sdc_repo: http://gerrit.onap.org/r/sdc.git
+sdnc_repo: http://gerrit.onap.org/r/sdnc/oam.git
+vid_repo: http://gerrit.onap.org/r/vid.git
+clamp_repo: http://gerrit.onap.org/r/clamp.git
+vnfsdk_repo: http://gerrit.onap.org/r/vnfsdk/refrepo.git
