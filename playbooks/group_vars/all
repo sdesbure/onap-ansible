@@ -37,7 +37,7 @@ dnsaas_tenant_name: "{{ openstack_tenant_name }}"
 dnsaas_username: "{{ openstack_username }}"
 dnsaas_password: "{{ openstack_api_key }}"
 
-# Put the multivim provided keystone API url here 
+# Put the multivim provided keystone API url here
 # if using multicoud DNSaas Service
 dcae_keystone_url: PUT THE MULTIVIM PROVIDED KEYSTONE API URL HERE
 
@@ -159,4 +159,3 @@ sdnc_repo: http://gerrit.onap.org/r/sdnc/oam.git
 vid_repo: http://gerrit.onap.org/r/vid.git
 clamp_repo: http://gerrit.onap.org/r/clamp.git
 vnfsdk_repo: http://gerrit.onap.org/r/vnfsdk/refrepo.git
-
