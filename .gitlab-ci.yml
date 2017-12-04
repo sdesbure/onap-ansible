@@ -15,7 +15,7 @@ yaml_checking:
   script:
     - yamllint .gitlab-ci.yml
     - yamllint playbooks/*.yml
-    - yamllint playbooks/vars/*.yml
+    - yamllint playbooks/group_vars/*
   <<: *syntax_docker
 
 ansible_linting:
