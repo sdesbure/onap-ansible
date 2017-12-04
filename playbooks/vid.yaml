@@ -1,10 +1,5 @@
 ---
-# file: webservers.yml
-- hosts: mavm_huawei
-  gather_facts: "False"
+- hosts: vid
   become: "yes"
-  vars_files:
-    - vars/all.yaml
-    - vars/vid.yaml
   roles:
     - vid
