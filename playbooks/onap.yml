@@ -5,8 +5,6 @@
     - create-vms
   tags: create
 
-
-
 ###############################################################################
 # Taken from
 # https://github.com/openstack/kolla-ansible/blob/stable/pike/ansible/site.yml
