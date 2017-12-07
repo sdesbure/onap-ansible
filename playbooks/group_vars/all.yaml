@@ -2,12 +2,17 @@
 ##
 # Important variables
 ##
+# Project
+ha_mode: "no"
+project_name: onap_test
+
 # Network
 public_network_name: ext-net
 oam_network_cidr: 192.168.12.0/24
 
 # Images
 default_image: debian-9
+default_user: debian
 ## Used for legacy, will be removed soon
 ubuntu_16_04_image: ubuntu-14.04-daily
 ubuntu_14_04_image: ubuntu-16.04-daily
@@ -21,8 +26,8 @@ openstack_horizon_url: https://osa.pod4.opnfv.fr/
 # If set to yes, use multicloud DNSaaS service.
 # If set to no, use the designate present on the Openstack cloud.
 dns_list:
-  - 9.9.9.9
-  - 9.9.10.10
+  - 10.4.0.15
+  - 10.4.0.16
 dnsaas_config_enabled: "no"
 # give the dcae domain where we should register our VMs
 dcae_domain: onap.bzh
@@ -41,7 +46,6 @@ dnsaas_password: "{{ openstack_api_key }}"
 # if using multicoud DNSaas Service
 dcae_keystone_url: PUT THE MULTIVIM PROVIDED KEYSTONE API URL HERE
 
-
 ##
 # check if variables check your
 # environment
@@ -55,24 +59,68 @@ flavor_xxlarge: onap.xxlarge
 ##
 # Other variables
 ##
+default_volume_size: 40
+use_vm_base_name: "no"
 vm_base_name: onap
-key_name: onap
-heat_stack_name: onap
-onap_etc_path: /opt/onap
+# We start at 50 for DHCP in order to leave space for the HEAT part
+subnet_pool_start: 50
+subnet_pool_end: 200
+key_name: "{{ project_name }}"
+heat_stack_name: "{{ project_name }}"
+onap_etc_path: "/opt/{{ project_name }}"
+oam_network_name: "{{ project_name }}"
+oam_subnet_name: "{{ oam_network_name }}-subnet"
+oam_router_name: "{{ oam_network_name }}"
+security_group_name: "{{ project_name }}"
+
+enable_aai: "yes"
+enable_appc: "yes"
+enable_dcae: "yes"
+enable_dns: "yes"
+enable_consul: "yes"
+enable_so: "yes"
+enable_mr: "yes"
+enable_policy": "yes"
+enable_portal: "yes"
+enable_robot: "yes"
+enable_sdc: "yes"
+enable_sdnc: "yes"
+enable_vid: "yes"
+enable_clamp: "yes"
+enable_openo: "yes"
+
+virtual_machines:
+  vid:
+    vm_number: 1
+    short_name: vid
+    flavor: "{{ flavor_medium }}"
+    volumes:
+        # If name is set to default, the naming will be 'vm_name-volume_number'
+      - name: default
+        size: "{{ default_volume_size }}"
+    groups:
+      - server
+      - docker
+      - private_docker
+      - git
+      - volume
+    ip_addr_fact: vid_ip_addr
 
 ##
 # Don't touch unless you know what to do
 ##
+consul_vm_numbers: "{{ (ha_mode | bool) | ternary(3,1) }}"
 
 # Either use these variables or source an openstack rc file
 # openstack_tenant_id:
-# openstack_tenant_name:
+openstack_tenant_name: "{{ project_name }}"
 # openstack_username:
 # openstack_api_key:
 openstack_auth_method: password
-openstack_region: RegionOne
+# openstack_region:
 # openstack_keystone_url:
 
+# If you don't want a component, put the value to false
 
 # If left commented, addresses will be chosen automatically
 # aai1_ip_addr:
@@ -93,6 +141,9 @@ openstack_region: RegionOne
 
 nexus_repo: https://nexus.onap.org/content/sites/raw
 nexus_docker_repo: nexus3.onap.org:10001
+# fill it if you want to retrieve the images of "default" docker from
+# different repo than docker hub.
+#default_docker_repo:
 nexus_username: docker
 nexus_password: docker
 dmaap_topic: AUTO
@@ -108,7 +159,6 @@ portal_branch: master
 robot_branch: master
 sdc_branch: master
 sdnc_branch: master
-vid_branch: master
 clamp_branch: master
 vnfsdk_branch: master
 
@@ -122,7 +172,6 @@ portal_docker: v1.3.0
 robot_docker: 1.1-STAGING-latest
 sdc_docker: v1.1.0
 sdnc_docker: v1.2.1
-vid_docker: v1.1.1
 clamp_docker: v1.1.0
 msb_docker: 1.0.0
 mvim_docker: v1.0.0
@@ -156,6 +205,10 @@ portal_repo: http://gerrit.onap.org/r/portal.git
 robot_repo: http://gerrit.onap.org/r/testsuite/properties.git
 sdc_repo: http://gerrit.onap.org/r/sdc.git
 sdnc_repo: http://gerrit.onap.org/r/sdnc/oam.git
-vid_repo: http://gerrit.onap.org/r/vid.git
+
 clamp_repo: http://gerrit.onap.org/r/clamp.git
 vnfsdk_repo: http://gerrit.onap.org/r/vnfsdk/refrepo.git
+
+
+maria_image: mariadb
+maria_version: 10

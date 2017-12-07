@@ -1,0 +1,25 @@
+---
+- name: create ONAP security group
+  os_security_group:
+    state: present
+    auth:
+      project_name: "{{ project_name }}"
+    name: "{{ security_group_name }}"
+    description: security group for ONAP OOM
+  register: security_group
+
+# TODO: give rules a lot more stringent
+- name: create security group ingress rule
+  os_security_group_rule:
+    auth:
+      project_name: "{{ project_name }}"
+    security_group: "{{ security_group_name }}"
+    state: present
+    remote_ip_prefix: 0.0.0.0/0
+    direction: ingress
+
+- name: create keypair for ONAP
+  os_keypair:
+    name: "{{ key_name }}"
+    state: present
+    public_key_file: "{{ pub_key_path }}"

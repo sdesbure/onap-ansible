@@ -1,0 +1,40 @@
+---
+- name: create ONAP project
+  os_project:
+    name: "{{ project_name }}"
+    state: present
+    domain: "{{ ansible_env.OS_USER_DOMAIN_NAME }}"
+
+- name: update quotas for ONAP
+  os_quota:
+    name: "{{ project_name }}"
+    cores: 320
+    ram: 327680
+    gigabytes: 2000
+    floating_ips: 40
+    instances: 40
+    snapshots: 80
+    volumes: 60
+
+- name: add current user into ONAP project as member
+  os_user_role:
+    user: "{{ ansible_env.OS_USERNAME }}"
+    role: _member_
+    project: "{{ project_name }}"
+
+- name: add current user into ONAP project as admin
+  os_user_role:
+    user: "{{ ansible_env.OS_USERNAME }}"
+    role: admin
+    project: "{{ project_name }}"
+
+- name: create heat_stack_owner role if not existent
+  os_keystone_role:
+    state: present
+    name: heat_stack_owner
+
+- name: add current user into ONAP project as heat_stack_owner
+  os_user_role:
+    user: "{{ ansible_env.OS_USERNAME }}"
+    role: heat_stack_owner
+    project: "{{ project_name }}"

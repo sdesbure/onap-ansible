@@ -1,0 +1,49 @@
+- name: add python-pip to packages to install
+  set_fact:
+    packages: "{{ packages|default([]) + ['python-pip'] }}"
+  when: ansible_python_version | version_compare('3', 'lt')
+
+- name: add python3-pip to packages to install
+  set_fact:
+    packages: "{{ packages|default([]) + ['python3-pip'] }}"
+  when: (ansible_python_version | version_compare('4', 'lt')) and
+        (ansible_python_version | version_compare('3', 'ge'))
+
+- name: add git to packages to install
+  set_fact:
+    packages: "{{ packages|default([]) + ['git'] }}"
+  when: inventory_hostname in groups['git']
+
+- name: install apt https_transport
+  apt:
+    name: apt-transport-https
+    state: present
+  when: inventory_hostname in groups['docker']
+
+- name: Import Docker CE repository gpg key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+  when: inventory_hostname in groups['docker']
+
+- name: Add Docker CE repository
+  apt_repository:
+    repo:
+     "deb [arch=amd64] \
+      https://download.docker.com/linux/{{ ansible_distribution | lower }} \
+      {{ ansible_distribution_release }} stable"
+    state: present
+  when: inventory_hostname in groups['docker']
+
+- name: add docker-ce to packages to install
+  set_fact:
+    packages: "{{ packages|default([]) + ['docker-ce'] }}"
+  when: inventory_hostname in groups['docker']
+
+- name: install required packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: "yes"
+  with_items: "{{ packages }}"

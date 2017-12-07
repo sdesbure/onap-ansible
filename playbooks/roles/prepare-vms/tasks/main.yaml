@@ -1,0 +1,58 @@
+---
+- name: install required packages
+  include_tasks: install_DEBIAN.yaml
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: upgrade pip
+  pip:
+    name: pip
+    state: latest
+
+- name: install docker python package
+  pip:
+    name: docker
+    state: present
+  when: inventory_hostname in groups['docker']
+
+- name: create filesystem
+  filesystem:
+    fstype: ext4
+    dev: "{{ volume_dev}}"
+  when: inventory_hostname in groups['volume']
+
+- name: add filesystem to mount part
+  mount:
+    path: "{{ volume_location }}"
+    src: "{{ volume_dev}}"
+    fstype: ext4
+    opts: defaults,noatime
+    state: mounted
+  when: inventory_hostname in groups['volume']
+
+- name: Log into private ONAP registry
+  docker_login:
+    registry: "{{ nexus_docker_repo }}"
+    username: "{{ nexus_username }}"
+    password: "{{ nexus_password }}"
+    reauthorize: "yes"
+  tags:
+    - creation
+  when: inventory_hostname in groups['private_docker']
+
+- name: add '/' at the end of default_docker_repo if needed
+  set_fact:
+    default_docker_repo:
+      "{{ default_docker_repo }}\
+       {{ (default_docker_repo[-1:] == '/') | ternary('', '/') }}"
+  when: default_docker_repo is defined
+
+- name: set default_docker_repo to '' when not defined
+  set_fact:
+    default_docker_repo: ""
+  when: default_docker_repo is not defined
+
+- name: retrieve docker images
+  docker_image:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ containers }}"

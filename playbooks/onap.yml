@@ -1,0 +1,80 @@
+---
+- name: create needed Virtual Machines
+  hosts: jumphost
+  roles:
+    - create-vms
+  tags: create
+
+
+
+###############################################################################
+# Taken from
+# https://github.com/openstack/kolla-ansible/blob/stable/pike/ansible/site.yml
+
+# NOTE(awiddersheim): Gather facts for all hosts as a
+# first step since several plays below require them when
+# building their configurations. The below 'gather_facts'
+# set to 'false' is a bit confusing but this is to avoid
+# Ansible gathering facts twice.
+- name: Gather facts for all hosts
+  hosts: server
+  serial: '{{ serial|default("0") }}'
+  gather_facts: "no"
+  tasks:
+    - name: wait for nodes to be reachable
+      wait_for_connection:
+    - name: Gather facts
+      setup:
+  tags: always
+
+# NOTE(pbourke): This case covers deploying subsets of hosts using --limit. The
+# limit arg will cause the first play to gather facts only about that node,
+# meaning facts such as IP addresses for rabbitmq nodes etc. will be undefined
+# in the case of adding a single compute node.
+# We don't want to add the delegate parameters to the above play as it will
+# result in ((num_nodes-1)^2) number of SSHs when running for all nodes
+# which can be very inefficient.
+- name: Gather facts for all hosts (if using --limit)
+  hosts: server
+  serial: '{{ serial|default("0") }}'
+  gather_facts: "no"
+  tasks:
+    - name: wait for nodes to be reachable
+      wait_for_connection:
+      when:
+        - (ansible_play_batch | length) != (groups['all'] | length)
+    - name: Gather facts
+      setup:
+      delegate_facts: "yes"
+      delegate_to: "{{ item }}"
+      with_items: "{{ groups['all'] }}"
+      when:
+        - (ansible_play_batch | length) != (groups['all'] | length)
+###############################################################################
+
+- name: Install baseline packages on servers
+  hosts: server
+  become: "yes"
+  serial: '{{ serial|default("0") }}'
+  gather_facts: "no"
+  roles:
+    - prepare-vms
+  tags: prepare
+
+- name: Apply role VID
+  gather_facts: "no"
+  become: "yes"
+  hosts: vid
+  serial: '{{ serial|default("0") }}'
+  roles:
+    - { role: vid,
+        tags: vid,
+  when: enable_vid | bool }
+
+# Install other VMs via legacy Heat
+- name: install last VMs
+  hosts: jumphost
+  gather_facts: "no"
+  serial: '{{ serial|default("0") }}'
+  roles:
+    - legacy-heat

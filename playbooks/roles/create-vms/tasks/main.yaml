@@ -1,0 +1,15 @@
+---
+- name: create project and add current user
+  import_tasks: project.yaml
+
+- name: create needed network
+  import_tasks: network.yaml
+
+- name: create security elements
+  import_tasks: security.yaml
+
+- name: create necessary virtual machines and register
+  include_tasks: virtual_machine.yaml
+  with_dict: "{{ virtual_machines }}"
+  loop_control:
+    loop_var: vm

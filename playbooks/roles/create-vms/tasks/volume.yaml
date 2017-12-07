@@ -1,0 +1,28 @@
+---
+- name: reinitialize generated names
+  set_fact:
+    volumes_name_vm: []
+
+- name: register generated names for this vm
+  set_fact:
+    volumes_name_vm: "{{ volumes_name_vm +
+                        [(item.1.name == 'default') |
+                          ternary(
+                            name + '-volume' + (item.0 | string) + '-' + (number_vm | string),
+                            item.1.name + '-' + (number_vm | string))] }}"
+  with_indexed_items: "{{ vm.value.volumes }}"
+
+- name: "create volume {{ item.1.name }} for vm #{{ number_vm }}"
+  os_volume:
+    auth:
+      project_name: "{{ project_name }}"
+    display_name: "{{ item.0 }}"
+    size: "{{ item.1.size }}"
+    state: present
+  with_together:
+    - "{{ volumes_name_vm }}"
+    - "{{ vm.value.volumes }}"
+
+- name: register generated names
+  set_fact:
+    volumes_name: "{{ volumes_name + [volumes_name_vm] }}"

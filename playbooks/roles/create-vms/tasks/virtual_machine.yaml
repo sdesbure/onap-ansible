@@ -1,0 +1,55 @@
+---
+- name: "generate virtual machine name for {{ vm.key }}"
+  set_fact:
+    name: "{{ (use_vm_base_name | bool) |
+              ternary(vm_base_name + '-' + vm.value.short_name,
+                      vm.value.short_name) }}"
+
+- name: initialize volumes_name fact
+  set_fact:
+    volumes_name: []
+
+- name: create necessary volumes
+  include_tasks: volume.yaml
+  with_sequence: start=0 count="{{ vm.value.vm_number }}"
+  loop_control:
+    loop_var: number_vm
+
+- name: "create {{ vm.key }} VM #{{ item }}"
+  os_server:
+    auth:
+      project_name: "{{ project_name }}"
+    name: "{{ name }}-{{ item }}"
+    image: "{{ default_image }}"
+    key_name: "{{ key_name }}"
+    flavor: "{{ vm.value.flavor }}"
+    network: "{{ oam_network_name }}"
+    security_groups:
+      - "{{ security_group_name }}"
+    auto_ip: "yes"
+    volumes: "{{ volumes_name[(item | int)] }}"
+  register: server
+  with_sequence: start=0 count="{{ vm.value.vm_number }}"
+
+- name: "add {{ vm.key }} #{{ item }} to inventory"
+  add_host:
+    name: "{{ vm.key }}-{{ item }}"
+    groups: "{{ (vm.value.groups + [vm.key]) | join(',') }}"
+    inventory_dir: "{{ inventory_dir }}"
+    ansible_ssh_host: "{{ server.results[(item | int)].openstack.public_v4 }}"
+    ansible_ssh_user: "{{ default_user }}"
+  with_sequence: start=0 count="{{ vm.value.vm_number }}"
+
+# Today heat deployment supports only one instance
+- name: retrieve facts about installation
+  set_fact:
+    "{{ vm.value.ip_addr_fact }}": "{{ server.results.0.openstack.private_v4 }}"
+
+# TODO handle case with several volumes
+- name: "set fact volume_dev on {{ item.key }}"
+  set_fact:
+    volume_dev: "{{ server.results[(item | int)].openstack.volumes.0.device }}"
+  delegate_to: "{{ vm.key }}-{{ item }}"
+  delegate_facts: "yes"
+  when: (vm.value.volumes | length) > 0
+  with_sequence: start=0 count="{{ vm.value.vm_number }}"

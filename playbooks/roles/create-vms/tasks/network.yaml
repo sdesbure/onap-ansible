@@ -1,0 +1,31 @@
+---
+- name: create ONAP private network
+  os_network:
+    project: "{{ project_name }}"
+    name: "{{ oam_network_name }}"
+    state: present
+
+- name: create OOM private subnetwork
+  os_subnet:
+    state: present
+    network_name: "{{ oam_network_name }}"
+    name: "{{ oam_subnet_name }}"
+    cidr: "{{ oam_network_cidr }}"
+    project: "{{ project_name }}"
+    allocation_pool_start:
+      "{{ (oam_network_cidr | ipaddr('net') |
+           ipaddr(((subnet_pool_start) | string))).split('/') |
+           list | first }}"
+    allocation_pool_end:
+      "{{ (oam_network_cidr | ipaddr('net') |
+           ipaddr(((subnet_pool_end) | string))).split('/') |
+           list | first }}"
+
+- name: create router
+  os_router:
+    project: "{{ project_name }}"
+    state: present
+    name: "{{ oam_router_name }}"
+    network: "{{ public_network_name }}"
+    interfaces:
+      - "{{ oam_subnet_name }}"

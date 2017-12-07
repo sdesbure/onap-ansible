@@ -67,7 +67,7 @@
     - vid_ip_addr
     - clamp_ip_addr
     - openo_ip_addr
-  when: vars[item] is not defined
+  when: vars[item.1] is not defined
 
 - name: retrieve contents for public and private keys
   include_tasks: retrieve_content.yaml

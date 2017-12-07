@@ -1,0 +1,22 @@
+---
+onap_module_name: vid
+
+volume_location: /var/lib/mysql
+
+vid_docker: openecomp/vid
+vid_version: v1.1.1
+vid_repo: http://gerrit.onap.org/r/vid.git
+vid_branch: master
+
+vid_maria_name: vid-mariadb
+vid_container_name: vid-server
+vid_port: 8080
+
+vid_mysql_db: vid_openecomp_epsdk
+vid_maria_user: vidadmin
+vid_maria_password: 12dsf4!!*wxvsknjJJFBHBCd
+vid_db_root_password: sdf6(-dtuFygH*js5v487)
+
+containers:
+  - "{{ default_docker_repo }}{{ maria_image }}:{{ maria_version }}"
+  - "{{ nexus_docker_repo }}/{{ vid_docker }}:{{ vid_version }}"
