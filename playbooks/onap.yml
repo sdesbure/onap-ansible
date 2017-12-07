@@ -67,9 +67,9 @@
   hosts: vid
   serial: '{{ serial|default("0") }}'
   roles:
-    - { role: vid,
-        tags: vid,
-  when: enable_vid | bool }
+    - role: vid
+      tags: vid
+      when: enable_vid | bool
 
 # Install other VMs via legacy Heat
 - name: install last VMs
