@@ -96,7 +96,7 @@ virtual_machines:
     flavor: "{{ flavor_medium }}"
     volumes:
       - name: default
-        # If name is set to default, the naming will be 
+        # If name is set to default, the naming will be
         # 'vm_name-volume_number-vm_number'
         size: "{{ default_volume_size }}"
     groups:
