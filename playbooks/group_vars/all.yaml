@@ -95,8 +95,9 @@ virtual_machines:
     short_name: vid
     flavor: "{{ flavor_medium }}"
     volumes:
-        # If name is set to default, the naming will be 'vm_name-volume_number'
       - name: default
+        # If name is set to default, the naming will be 
+        # 'vm_name-volume_number-vm_number'
         size: "{{ default_volume_size }}"
     groups:
       - server
@@ -143,7 +144,7 @@ nexus_repo: https://nexus.onap.org/content/sites/raw
 nexus_docker_repo: nexus3.onap.org:10001
 # fill it if you want to retrieve the images of "default" docker from
 # different repo than docker hub.
-#default_docker_repo:
+# default_docker_repo:
 nexus_username: docker
 nexus_password: docker
 dmaap_topic: AUTO
