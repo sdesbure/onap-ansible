@@ -18,5 +18,5 @@ vid_maria_password: 12dsf4!!*wxvsknjJJFBHBCd
 vid_db_root_password: sdf6(-dtuFygH*js5v487)
 
 containers:
-  - "{{ default_docker_repo }}{{ maria_image }}:{{ maria_version }}"
+  - "{{ default_docker_repo }}{{ maria_image }}:{{ maria_version }}"
   - "{{ nexus_docker_repo }}/{{ vid_docker }}:{{ vid_version }}"
