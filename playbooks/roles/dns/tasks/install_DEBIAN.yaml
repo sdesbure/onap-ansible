@@ -1,0 +1,10 @@
+---
+- name: install dns packages
+  apt:
+    name:
+      - bind9
+      - bind9utils
+    state: present
+
+- set_fact:
+    dns_etc_path: /etc/bind

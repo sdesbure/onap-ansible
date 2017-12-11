@@ -1,13 +1,15 @@
 - name: add python-pip to packages to install
   set_fact:
     packages: "{{ packages|default([]) + ['python-pip'] }}"
-  when: ansible_python_version | version_compare('3', 'lt')
+  when: ansible_python_version | version_compare('3', 'lt') and
+        inventory_hostname in groups['docker']
 
 - name: add python3-pip to packages to install
   set_fact:
     packages: "{{ packages|default([]) + ['python3-pip'] }}"
   when: (ansible_python_version | version_compare('4', 'lt')) and
-        (ansible_python_version | version_compare('3', 'ge'))
+        (ansible_python_version | version_compare('3', 'ge')) and
+        inventory_hostname in groups['docker']
 
 - name: add git to packages to install
   set_fact:
@@ -22,7 +24,8 @@
 
 - name: Import Docker CE repository gpg key
   apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
+    url: "https://download.docker.com/linux/\
+          {{ ansible_distribution | lower }}/gpg"
     state: present
     id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
   when: inventory_hostname in groups['docker']
@@ -47,3 +50,4 @@
     state: present
     update_cache: "yes"
   with_items: "{{ packages }}"
+  when: packages is defined

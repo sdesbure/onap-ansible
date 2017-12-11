@@ -1,0 +1,22 @@
+---
+- name: generate dns zone "{{ item }}"
+  os_zone:
+    auth:
+      project_name: "{{ project_name }}"
+    email: "{{ email }}"
+    description: "ONAP zone {{ item }}"
+    state: present
+    name: "{{ item }}."
+  with_items:
+    - simpledemo.openecomp.org
+    - simpledemo.onap.org
+    - "{{ dns_domain }}"
+  when: use_dnsaas | bool
+
+- name: create dns vm and register
+  include_tasks: virtual_machine.yaml
+  with_dict:
+    dns: "{{ dns }}"
+  loop_control:
+    loop_var: vm
+  when: not (use_dnsaas | bool)
