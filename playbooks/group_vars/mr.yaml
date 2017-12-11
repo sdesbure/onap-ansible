@@ -38,3 +38,8 @@ mr_version: latest
 mr_ports:
   - "3904:3904"
   - "3905:3905"
+
+containers:
+  - "{{ default_docker_repo }}{{ kafka_image }}:{{ kafka_version }}"
+  - "{{ default_docker_repo }}{{ zookeper_image }}:{{ zookeeper_version }}"
+  - "{{ default_docker_repo }}{{ mr_image }}:{{ mr_version }}"
