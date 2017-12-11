@@ -63,8 +63,10 @@
 
 - name: retrieve kafka and zookeper IPs
   set_fact:
-    zookeeper_ip_address: "{{ zookeeper.ansible_facts.docker_container.NetworkSettings.IPAddress }}"
-    kafka_ip_address: "{{ kafka.ansible_facts.docker_container.NetworkSettings.IPAddress }}"
+    zookeeper_ip_address: "{{ zookeeper.ansible_facts.docker_container.\
+                         NetworkSettings.IPAddress }}"
+    kafka_ip_address: "{{ kafka.ansible_facts.docker_container.\
+                     NetworkSettings.IPAddress }}"
 
 - name: wait for zookeeper to be up and running
   wait_for:
@@ -98,7 +100,8 @@
     image: "nexus3.onap.org:10001/{{ mr_image }}:{{ mr_version }}"
     ports: "{{ mr_ports }}"
     volumes:
-      - "{{ mr_msgrtrapi_volume}}:/appl/dmaapMR1/bundleconfig/etc/appprops/MsgRtrApi.properties"
+      - "{{ mr_msgrtrapi_volume}}:/appl/dmaapMR1/bundleconfig/etc/\
+      appprops/MsgRtrApi.properties"
       - "{{ mr_cadi_volume}}:/appl/dmaapMR1/etc/cadi.properties"
       - "{{ mr_key_volume}}:/appl/dmaapMR1/etc/keyfile"
     links:
