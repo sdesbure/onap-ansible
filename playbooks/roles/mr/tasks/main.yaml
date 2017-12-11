@@ -5,7 +5,6 @@
   file:
     path: "{{ kafka_data_volume }}"
     state: directory
-    recurse: yes
 
 - name: Download mr MsgRtrApi.properties conf file
   get_url:
