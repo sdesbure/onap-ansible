@@ -70,14 +70,12 @@
 - name: wait for zookeeper to be up and running
   wait_for:
     port: "{{ zookeeper_port }}"
-    delay: 10
     timeout: 900
     host: "{{ zookeeper_ip_address }}"
 
 - name: wait for kafka to be up and running
   wait_for:
     port: "{{ kafka_port }}"
-    delay: 10
     timeout: 900
     host: "{{ kafka_ip_address }}"
 
