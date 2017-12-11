@@ -1,0 +1,47 @@
+# {{ ansible_managed }}
+GLOBAL_INJECTED_AAI1_IP_ADDR = "aai.api.{{ dns_domain }}"
+GLOBAL_INJECTED_AAI2_IP_ADDR = "vm2.aai.{{ dns_domain }}"
+GLOBAL_INJECTED_APPC_IP_ADDR = "appc.api.{{ dns_domain }}"
+GLOBAL_INJECTED_ARTIFACTS_VERSION = "{{ artifacts_version }}"
+GLOBAL_INJECTED_CLAMP_IP_ADDR = "clamp.api.{{ dns_domain }}"
+GLOBAL_INJECTED_CLOUD_ENV = "{{ cloud_env }}"
+GLOBAL_INJECTED_DCAE_IP_ADDR = "dcae.api.{{ dns_domain }}"
+GLOBAL_INJECTED_DNS_IP_ADDR = "{{ dns_domain }}"
+GLOBAL_INJECTED_MR_IP_ADDR = "mr.api.{{ dns_domain }}"
+GLOBAL_INJECTED_MSO_IP_ADDR = "mso.api.{{ dns_domain }}"
+GLOBAL_INJECTED_NETWORK = "{{ oam_network_name }}"
+GLOBAL_INJECTED_OPENO_IP_ADDR = "vm1.openo.{{ dns_domain }}"
+GLOBAL_INJECTED_POLICY_IP_ADDR = "vm1.policy.{{ dns_domain }}"
+GLOBAL_INJECTED_PORTAL_IP_ADDR = "portal.api.{{ dns_domain }}"
+GLOBAL_INJECTED_PUBLIC_NET_ID = "{{ public_network_id }}"
+GLOBAL_INJECTED_SCRIPT_VERSION = "{{ artifacts_version }}"
+GLOBAL_INJECTED_SDC_IP_ADDR = "sdc.api.{{ dns_domain }}"
+GLOBAL_INJECTED_SDNC_IP_ADDR = "sdnc.api.{{ dns_domain }}"
+GLOBAL_INJECTED_SO_IP_ADDR = "mso.api.{{ dns_domain }}"
+GLOBAL_INJECTED_VID_IP_ADDR = "vid.api.{{ dns_domain }}"
+GLOBAL_INJECTED_VM_FLAVOR = "{{ flavor_medium }}"
+GLOBAL_INJECTED_VM_IMAGE_NAME = "{{ ubuntu_16_04_image }}"
+
+GLOBAL_INJECTED_PROPERTIES={
+"GLOBAL_INJECTED_AAI1_IP_ADDR" : "aai.api.{{ dns_domain }}",
+"GLOBAL_INJECTED_AAI2_IP_ADDR" : "vm2.aai.{{ dns_domain }}",
+"GLOBAL_INJECTED_APPC_IP_ADDR" : "appc.api.{{ dns_domain }}",
+"GLOBAL_INJECTED_ARTIFACTS_VERSION" : "{{ artifacts_version }}",
+"GLOBAL_INJECTED_CLAMP_IP_ADDR" : "clamp.api.{{ dns_domain }}",
+"GLOBAL_INJECTED_CLOUD_ENV" : "{{ cloud_env }}",
+"GLOBAL_INJECTED_DCAE_IP_ADDR" : "dcae.api.{{ dns_domain }}",
+"GLOBAL_INJECTED_DNS_IP_ADDR" : "{{ dns_domain }}",
+"GLOBAL_INJECTED_MR_IP_ADDR" : "mr.api.{{ dns_domain }}",
+"GLOBAL_INJECTED_MSO_IP_ADDR" : "mso.api.{{ dns_domain }}",
+"GLOBAL_INJECTED_NETWORK" : "{{ oam_network_name }}",
+"GLOBAL_INJECTED_OPENO_IP_ADDR" : "vm1.openo.{{ dns_domain }}",
+"GLOBAL_INJECTED_POLICY_IP_ADDR" : "vm1.policy.{{ dns_domain }}",
+"GLOBAL_INJECTED_PORTAL_IP_ADDR" : "portal.api.{{ dns_domain }}",
+"GLOBAL_INJECTED_PUBLIC_NET_ID" : "{{ public_network_id }}",
+"GLOBAL_INJECTED_SCRIPT_VERSION" : "{{ artifacts_version }}",
+"GLOBAL_INJECTED_SDC_IP_ADDR" : "sdc.api.{{ dns_domain }}",
+"GLOBAL_INJECTED_SDNC_IP_ADDR" : "sdnc.api.{{ dns_domain }}",
+"GLOBAL_INJECTED_SO_IP_ADDR" : "mso.api.{{ dns_domain }}",
+"GLOBAL_INJECTED_VID_IP_ADDR" : "vid.api.{{ dns_domain }}",
+"GLOBAL_INJECTED_VM_FLAVOR" : "{{ flavor_medium }}",
+"GLOBAL_INJECTED_VM_IMAGE_NAME" : "{{ ubuntu_16_04_image }}"}

@@ -1,0 +1,3 @@
+---
+# TODO handle several regions for DCAE
+dcae_domain: "r1.{{ dns_domain }}"

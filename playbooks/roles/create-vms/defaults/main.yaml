@@ -1,0 +1,48 @@
+---
+# DNS is not in virtual machines as it may be installed or not
+dns:
+  vm_number: 1
+  short_name: dns
+  flavor: "{{ flavor_small }}"
+  groups:
+    - server
+  ip_addr_fact: dns_ip_addr
+
+virtual_machines:
+  robot:
+    vm_number: 1
+    short_name: robot
+    flavor: "{{ flavor_medium }}"
+    groups:
+      - server
+      - docker
+      - private_docker
+      - git
+    ip_addr_fact: robot_ip_addr
+  vid:
+    vm_number: 1
+    short_name: vid
+    flavor: "{{ flavor_medium }}"
+    volumes:
+      - name: default
+        # If name is set to default, the naming will be
+        # 'vm_name-volume_number-vm_number'
+        size: "{{ default_volume_size }}"
+    groups:
+      - server
+      - docker
+      - private_docker
+      - git
+      - volume
+    ip_addr_fact: vid_ip_addr
+
+dns_infos:
+  robot:
+    dns_name: "{{ virtual_machines.robot.short_name }}"
+    cnames:
+      - [ "{{ virtual_machines.robot.short_name }}", "1"]
+      - [ sniro, "1"]
+  vid:
+    dns_name: "{{ virtual_machines.vid.short_name }}"
+    cnames:
+      - ["{{ virtual_machines.vid.short_name }}", "1"]
