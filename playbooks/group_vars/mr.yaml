@@ -1,0 +1,32 @@
+---
+onap_module_name: messagerouter
+
+# tasks file for roles/prepare_test
+# dmaap_repo: git.onap.org/dmaap/messagerouter
+# dmaap_branch: master
+mr_zookeper_name: mr_zookeper
+zookeper_image: wurstmeister/zookeeper
+zookeeper_port: 2181
+zookeeper_volume: ./data-zookeeper
+
+mr_kafka_name: mr_kafka
+kafka_image: wurstmeister/kafka
+kafka_port: 9092
+kafka_host_name: 172.17.0.1
+kafka_zookeeper_connect: "{{ mr_zookeper_name }}:{{ zookeeper_port }}"
+kafka_start_config_file: https://git.onap.org/dcae/demo/startup/message-router/plain/docker_files/start-kafka.sh
+kafka_start_volume: /var/tmp/start_kafka.sh
+kafka_data_volume: /var/tmp/data-kafka
+
+mr_name: dmaap
+mr_msgrtrapi_config_file: https://git.onap.org/dcae/demo/startup/message-router/plain/docker_files/__MsgRtrApi.properties
+mr_msgrtrapi_volume: /var/tmp/MsgRtrApi.properties
+mr_cadi_config_file: https://git.onap.org/dcae/demo/startup/message-router/plain/docker_files/cadi.properties
+mr_cadi_volume: /var/tmp/cadi.properties
+mr_key_config_file: https://git.onap.org/dcae/demo/startup/message-router/plain/docker_files/mykey
+mr_key_volume: /var/tmp/mykey
+mr_image: attos/dmaap
+mr_version: latest
+mr_ports:
+  - "3904:3904"
+  - "3905:3905"
