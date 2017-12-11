@@ -4,12 +4,12 @@ onap_module_name: messagerouter
 # tasks file for roles/prepare_test
 # dmaap_repo: git.onap.org/dmaap/messagerouter
 # dmaap_branch: master
-mr_zookeper_name: mr_zookeper
+mr_zookeper_name: zookeper
 zookeper_image: wurstmeister/zookeeper
 zookeeper_port: 2181
 zookeeper_volume: ./data-zookeeper
 
-mr_kafka_name: mr_kafka
+mr_kafka_name: kafka
 kafka_image: wurstmeister/kafka
 kafka_port: 9092
 kafka_advertised_host_name: 172.17.0.1
