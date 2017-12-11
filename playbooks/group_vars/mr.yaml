@@ -6,6 +6,7 @@ onap_module_name: messagerouter
 # dmaap_branch: master
 mr_zookeper_name: zookeper
 zookeper_image: wurstmeister/zookeeper
+zookeeper_version: latest
 zookeeper_port: 2181
 zookeeper_volume: ./data-zookeeper
 
@@ -14,6 +15,7 @@ mr_path_dcae: "demo/startup/message-router/plain/docker_files"
 
 mr_kafka_name: kafka
 kafka_image: wurstmeister/kafka
+kafka_version: 1.0.0
 kafka_port: 9092
 kafka_advertised_host_name: 172.17.0.1
 kafka_zookeeper_connect: "{{ mr_zookeper_name }}:{{ zookeeper_port }}"

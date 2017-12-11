@@ -29,7 +29,7 @@
 - name: Start Zookeper
   docker_container:
     name: "{{ mr_zookeper_name }}"
-    image: "{{ zookeper_image }}"
+    image: "{{ zookeper_image }}:{{ zookeeper_version }}"
     state: started
     ports:
       - "{{ zookeeper_port }}:2181"
@@ -42,7 +42,7 @@
 - name: Start kafka
   docker_container:
     name: "{{ mr_kafka_name }}"
-    image: "{{ kafka_image }}"
+    image: "{{ kafka_image }}:{{ kafka_version }}"
     state: started
     ports:
       - "{{ kafka_port }}:{{ kafka_port }}"
