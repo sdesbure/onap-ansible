@@ -17,17 +17,21 @@
 - name: create filesystem
   filesystem:
     fstype: ext4
-    dev: "{{ volume_dev}}"
+    dev: "{{ item }}"
   when: inventory_hostname in groups['volume']
+  with_items: "{{ volume_devs }}"
 
-- name: add filesystem to mount part
+- name: add filesystems to mount part
   mount:
-    path: "{{ volume_location }}"
-    src: "{{ volume_dev}}"
+    path: "{{ item.0 }}"
+    src: "{{ item.1}}"
     fstype: ext4
     opts: defaults,noatime
     state: mounted
   when: inventory_hostname in groups['volume']
+  with_together:
+    - "{{ volume_locations.map(attribute='host') | list }}"
+    - "{{ volume_devs }}"
 
 - name: Log into private ONAP registry
   docker_login:

@@ -46,10 +46,13 @@
     "{{ vm.value.ip_addr_fact }}": "{{ server.results.0.openstack.private_v4 }}"
 
 # TODO handle case with several volumes
-- name: "set fact volume_dev on {{ item.key }}"
+- name: "set fact volume_devs on {{ item.key }}"
   set_fact:
-    volume_dev: "{{ server.results[(item | int)].openstack.volumes.0.device }}"
+    volume_devs: "{{ server.results[(item | int)].openstack.volumes |
+                     map(attribute='device') | list }}"
   delegate_to: "{{ vm.key }}-{{ item }}"
   delegate_facts: "yes"
-  when: (vm.value.volumes | length) > 0
+  when:
+    (vm.value.volumes is defined) and
+    (vm.value.volumes | length) > 0
   with_sequence: start=0 count="{{ vm.value.vm_number }}"

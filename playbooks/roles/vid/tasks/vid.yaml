@@ -23,8 +23,10 @@
       MYSQL_ROOT_PASSWORD: "{{ vid_db_root_password }}"
     volumes:
       - "{{onap_etc_path}}/vid/lf_config/vid-my.cnf:/etc/mysql/my.cnf"
-      - "{{onap_etc_path}}/vid/lf_config/vid-pre-init.sql:/docker-entrypoint-initdb.d/vid-pre-init.sql"
-      - "{{ volume_location }}"
+      - "{{onap_etc_path}}\
+        /vid/lf_config/vid-pre-init.sql:\
+        /docker-entrypoint-initdb.d/vid-pre-init.sql"
+      - "{{ vid_mariadb_volume }}:/var/lib/mysql"
   register: mariadb
   tags:
     - creation
