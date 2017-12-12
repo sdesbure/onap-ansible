@@ -20,10 +20,10 @@ default_image: debian-9
 default_user: debian
 
 ## Needed for robot VM
-ubuntu_16_04_image: ubuntu-14.04-daily
+ubuntu_16_04_image: ubuntu-16.04-daily
 
 ## Used for legacy, will be removed soon
-ubuntu_14_04_image: ubuntu-16.04-daily
+ubuntu_14_04_image: ubuntu-14.04-daily
 centos_7_image: centos-7
 
 # Access
