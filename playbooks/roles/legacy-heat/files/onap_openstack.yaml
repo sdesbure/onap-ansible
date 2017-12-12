@@ -204,6 +204,8 @@ parameters:
 
   dns_public_ip_addr:
     type: string
+  mr_public_ip_addr:
+    type: string
 
   ###########################
   #                         #
@@ -1328,7 +1330,7 @@ resources:
             __dns_floating_ip_addr__: { get_param: dns_public_ip_addr }
             __aai1_floating_ip_addr__: { get_attr: [aai1_floating_ip, floating_ip_address] }
             __aai2_floating_ip_addr__: { get_attr: [aai2_floating_ip, floating_ip_address] }
-            __mrouter_floating_ip_addr__: { get_attr: [mrouter_floating_ip, floating_ip_address] }
+            __mrouter_floating_ip_addr__: { get_param: mr_public_ip_addr }
             __sdc_floating_ip_addr__: { get_attr: [sdc_floating_ip, floating_ip_address] }
             __policy_floating_ip_addr__: { get_attr: [policy_floating_ip, floating_ip_address] }
             __openo_floating_ip_addr__: { get_attr: [openo_floating_ip, floating_ip_address] }

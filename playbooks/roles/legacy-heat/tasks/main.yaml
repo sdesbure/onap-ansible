@@ -43,6 +43,10 @@
   set_fact:
     dns_public_ip_addr: "{{ hostvars[groups.dns.0].ansible_ssh_host }}"
 
+- name: retrieve public ip of DNS
+  set_fact:
+    mr_public_ip_addr: "{{ hostvars[groups.mr.0].ansible_ssh_host }}"
+
 # We first remove the end '/' if exists and then remove the last part of url
 - name: remove version number in keystone_url if put
   set_fact:
