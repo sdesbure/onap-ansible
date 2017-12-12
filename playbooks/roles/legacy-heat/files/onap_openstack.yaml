@@ -265,8 +265,6 @@ parameters:
     type: string
   appc_repo:
     type: string
-  mr_repo:
-    type: string
   so_repo:
     type: string
   policy_repo:
@@ -356,8 +354,6 @@ parameters:
   appc_branch:
     type: string
   so_branch:
-    type: string
-  mr_branch:
     type: string
   policy_branch:
     type: string
