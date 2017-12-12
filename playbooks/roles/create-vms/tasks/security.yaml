@@ -20,6 +20,8 @@
 
 - name: create keypair for ONAP
   os_keypair:
+    auth:
+      project_name: "{{ project_name }}"
     name: "{{ key_name }}"
     state: present
     public_key_file: "{{ pub_key_path }}"

@@ -1,0 +1,92 @@
+---
+- name: ensure directories are created
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ onap_etc_path }}/eteshare/logs"
+    - "{{ onap_etc_path }}/eteshare/config"
+    - "{{ onap_etc_path }}/testsuite"
+
+- name: generate vm_properties
+  template:
+    src: "vm_properties.py.j2"
+    dest: "{{ onap_etc_path }}/eteshare/config/vm_properties.py"
+
+- name: retrieve needed files from robot repo
+  git:
+    repo: "{{ robot_repo }}"
+    version: "{{ robot_branch }}"
+    dest: "{{ onap_etc_path }}/testsuite/properties"
+    depth: 1
+  tags:
+    - creation
+
+- name: retrieve needed files from demo repo
+  git:
+    repo: "{{ heat_code_repo }}"
+    version: "{{ heat_branch }}"
+    dest: "{{ onap_etc_path }}/demo"
+    depth: 1
+  tags:
+    - creation
+
+- name: list needed files to copy
+  find:
+    path: "{{ onap_etc_path }}/testsuite/properties"
+    patterns:
+      - "integration_*"
+  register: files
+
+- name: copy files
+  copy:
+    src: "{{ item.path }}"
+    dest: "{{ onap_etc_path }}/eteshare/config"
+    remote_src: "yes"
+  with_items: "{{ files.files }}"
+  loop_control:
+    label: "{{ item.path }}"
+
+- name: "copy script files to {{ onap_etc_path }}"
+  copy:
+    src: "{{ onap_etc_path }}/testsuite/properties/{{ item }}"
+    dest: "{{ onap_etc_path }}"
+    remote_src: "yes"
+    mode: u=rwx,g=rx,o=rx
+  with_items:
+    - ete.sh
+    - demo.sh
+
+- name: copy demo files
+  synchronize:
+    src: "{{ onap_etc_path }}/demo/heat"
+    dest: "{{ onap_etc_path }}/eteshare/"
+    recursive: yes
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: Start robot simulator image
+  docker_container:
+    name: "{{ robot_simulator_name }}"
+    image:
+      "{{ nexus_docker_repo }}/{{ simulator_docker }}:{{ simulator_version }}"
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - "{{ simulator_port }}:9999"
+  tags:
+    - creation
+    - configuration
+
+- name: Start testsuite  image
+  docker_container:
+    name: "{{ robot_container_name }}"
+    image: "{{ nexus_docker_repo }}/{{ robot_docker }}:{{ robot_version }}"
+    state: started
+    restart_policy: unless-stopped
+    volumes:
+      - "{{ onap_etc_path }}/eteshare:/share"
+    ports:
+      - "{{ robot_port }}:88"
+  tags:
+    - creation
+    - configuration

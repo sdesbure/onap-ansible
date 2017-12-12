@@ -1,0 +1,18 @@
+---
+onap_module_name: robot
+
+robot_docker: openecomp/testsuite
+simulator_docker: onap/sniroemulator
+simulator_version: latest
+robot_version: 1.1-STAGING-latest
+robot_repo: http://gerrit.onap.org/r/testsuite/properties.git
+robot_branch: master
+
+robot_simulator_name: sniroemulator
+robot_container_name: openecompete_container
+robot_port: 88
+simulator_port: 8080
+
+containers:
+  - "{{ nexus_docker_repo }}/{{ simulator_docker }}:{{ simulator_version }}"
+  - "{{ nexus_docker_repo }}/{{ robot_docker }}:{{ robot_version }}"

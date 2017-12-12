@@ -1,0 +1,5 @@
+---
+- name: reload DNS server
+  service:
+    name: bind9
+    state: reloaded

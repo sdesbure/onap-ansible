@@ -1,0 +1,37 @@
+---
+- name: retrieve dns information
+  set_fact:
+    dns_info: "dns_infos[vm.key]"
+
+- name: "generate DNS name for {{ vm.key }} #{{ item }}"
+  os_recordset:
+    auth:
+      project_name: "{{ project_name }}"
+    zone: "{{ default_zone }}."
+    name: "vm{{ item }}.{{ dns_infos.dns_name }}"
+    recordset_type: A
+    records:
+      - "{{ server.results[((item - 1) | int)].openstack.private_v4 }}"
+  with_items: "{{ server_sequence }}"
+
+- name: "generate DNS name for {{ vm.key }} #{{ item }} on region1"
+  os_recordset:
+    auth:
+      project_name: "{{ project_name }}"
+    zone: "{{ default_zone }}."
+    name: "c1.vm{{ item }}.{{ dns_infos.dns_name }}"
+    recordset_type: A
+    records:
+      - "{{ server.results[((item - 1) | int)].openstack.private_v4 }}"
+  with_items: "{{ server_sequence }}"
+
+- name: generate relevant cnames
+  os_recordset:
+    auth:
+      project_name: "{{ project_name }}"
+    zone: "{{ default_zone }}."
+    name: "{{ item.0 }}"
+    recordset_type: CNAME
+    records:
+      - "vm{{ item.1 }}.{{ dns_infos.dns-name }}"
+  with_items: "{{ dns_infos.cnames }}"

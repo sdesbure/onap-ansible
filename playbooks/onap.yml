@@ -50,6 +50,16 @@
         - (ansible_play_batch | length) != (groups['all'] | length)
 ###############################################################################
 
+- name: Apply role DNS
+  gather_facts: "no"
+  become: "yes"
+  hosts: dns
+  serial: '{{ serial|default("0") }}'
+  roles:
+    - role: dns
+      tags: dns
+      when: not (use_dnsaas | bool)
+
 - name: Install baseline packages on servers
   hosts: server
   become: "yes"
@@ -68,6 +78,16 @@
     - role: vid
       tags: vid
       when: enable_vid | bool
+
+- name: Apply role Robot
+  gather_facts: "no"
+  become: "yes"
+  hosts: robot
+  serial: '{{ serial|default("0") }}'
+  roles:
+    - role: robot
+      tags: robot
+      when: enable_robot | bool
 
 # Install other VMs via legacy Heat
 - name: install last VMs

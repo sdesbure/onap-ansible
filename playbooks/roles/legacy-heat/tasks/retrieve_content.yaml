@@ -5,6 +5,6 @@
   register: slurp
   when: vars[item.name] is not defined
 
-- name: set {{ item.name }}  fact
+- name: set {{ item.name }} fact
   set_fact: { "{{ item.name }}": "{{ slurp['content'] | b64decode }}" }
   when: vars[item.name] is not defined

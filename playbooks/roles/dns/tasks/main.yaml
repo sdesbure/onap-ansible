@@ -1,0 +1,59 @@
+---
+- debug: msg="{{ dns_ip_addr }}"
+- name: retrieve all IP addresses
+  set_fact:
+    "{{ item }}": "{{ hostvars['jumphost'][item] }}"
+  with_items:
+    - aai1_ip_addr
+    - aai2_ip_addr
+    - appc_ip_addr
+    - dcae_ip_addr
+    - so_ip_addr
+    - mr_ip_addr
+    - policy_ip_addr
+    - portal_ip_addr
+    - robot_ip_addr
+    - sdc_ip_addr
+    - sdnc_ip_addr
+    - vid_ip_addr
+    - clamp_ip_addr
+    - openo_ip_addr
+
+- name: install required packages
+  include_tasks: install_DEBIAN.yaml
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: set DNS forwarder
+  set_fact:
+    dns_forwarder: "{{ dns_list.0 }}"
+
+- name: ensure relevant directories are created
+  file:
+    path: /etc/bind/zones
+    state: directory
+
+- name: generate zones
+  set_fact:
+    zones:
+      ["simpledemo.openecomp.org", "simpledemo.onap.org", "{{ dns_domain }}"]
+
+- name: push DNS configuration options
+  template:
+    src: options.j2
+    dest: /etc/bind/named.conf.options
+  notify: reload DNS server
+
+- name: push DNS configuration options
+  template:
+    src: local.j2
+    dest: /etc/bind/named.conf.local
+  notify: reload DNS server
+
+- name: generate configuration for zone {{ dns_zone }}
+  template:
+    src: db.j2
+    dest: "/etc/bind/zones/db.{{ dns_zone }}"
+  notify: reload DNS server
+  with_items: "{{ zones }}"
+  loop_control:
+    loop_var: dns_zone
