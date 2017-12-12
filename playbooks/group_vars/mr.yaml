@@ -1,0 +1,50 @@
+---
+onap_module_name: messagerouter
+
+# tasks file for roles/prepare_test
+# dmaap_repo: git.onap.org/dmaap/messagerouter
+# dmaap_branch: master
+mr_zookeper_name: zookeper
+zookeper_image: wurstmeister/zookeeper
+zookeeper_version: latest
+zookeeper_port: 2181
+zookeeper_volume: "{{ onap_etc_path }}/{{ onap_module_name }}/data-zookeeper"
+
+dcae_gerrit_repo: "https://git.onap.org/dcae"
+mr_path_dcae: "demo/startup/message-router/plain/docker_files"
+
+mr_kafka_name: kafka
+kafka_image: wurstmeister/kafka
+kafka_version: 1.0.0
+kafka_port: 9092
+kafka_advertised_host_name: 172.17.0.1
+kafka_zookeeper_connect: "{{ mr_zookeper_name }}:{{ zookeeper_port }}"
+kafka_start_config_file: "{{ dcae_gerrit_repo }}/{{ mr_path_dcae }}\
+                          /start-kafka.sh"
+kafka_start_volume: "{{ onap_etc_path }}/{{ onap_module_name }}/start_kafka.sh"
+kafka_data_volume: "{{ onap_etc_path }}/{{ onap_module_name }}/data-kafka"
+
+mr_name: dmaap
+mr_msgrtrapi_config_file: "{{ dcae_gerrit_repo }}/{{ mr_path_dcae }}\
+                           /__MsgRtrApi.properties"
+mr_msgrtrapi_volume: "{{ onap_etc_path }}/{{ onap_module_name }}\
+                      /MsgRtrApi.properties"
+mr_cadi_config_file:
+  "{{ dcae_gerrit_repo }}/{{ mr_path_dcae }}/cadi.properties"
+mr_cadi_volume: "{{ onap_etc_path }}/{{ onap_module_name }}/cadi.properties"
+mr_key_config_file: "{{ dcae_gerrit_repo }}/{{ mr_path_dcae }}/mykey"
+mr_key_volume: "{{ onap_etc_path }}/{{ onap_module_name }}/mykey"
+mr_image: attos/dmaap
+mr_version: latest
+mr_ports:
+  - "3904:3904"
+  - "3905:3905"
+
+containers:
+  - "{{ default_docker_repo }}{{ kafka_image }}:{{ kafka_version }}"
+  - "{{ default_docker_repo }}{{ zookeper_image }}:{{ zookeeper_version }}"
+  - "{{ default_docker_repo }}{{ mr_image }}:{{ mr_version }}"
+
+volume_locations:
+  - "{{ kafka_data_volume }}"
+  - "{{ zookeeper_volume }}"

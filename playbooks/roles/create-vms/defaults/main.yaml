@@ -9,6 +9,25 @@ dns:
   ip_addr_fact: dns_ip_addr
 
 virtual_machines:
+  mr:
+    vm_number: 1
+    short_name: mr
+    flavor: "{{ flavor_large }}"
+    volumes:
+      - name: default
+        # If name is set to default, the naming will be
+        # 'vm_name-volume_number-vm_number'
+        size: "{{ default_volume_size }}"
+      - name: default
+        # If name is set to default, the naming will be
+        # 'vm_name-volume_number-vm_number'
+        size: "{{ default_volume_size }}"
+    groups:
+      - server
+      - docker
+      - git
+      - volume
+    ip_addr_fact: mr_ip_addr
   robot:
     vm_number: 1
     short_name: robot
@@ -41,8 +60,13 @@ dns_infos:
     dns_name: "{{ virtual_machines.robot.short_name }}"
     cnames:
       - [ "{{ virtual_machines.robot.short_name }}", "1"]
-      - [ sniro, "1"]
+      - [ "sniro", "1"]
   vid:
     dns_name: "{{ virtual_machines.vid.short_name }}"
     cnames:
       - ["{{ virtual_machines.vid.short_name }}", "1"]
+  mr:
+    dns_name: "{{ virtual_machines.vid.short_name }}"
+    cnames:
+      - ["{{ virtual_machines.vid.short_name }}", "1"]
+      - ["ueb", "1"]

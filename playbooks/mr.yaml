@@ -1,0 +1,7 @@
+---
+# file: webservers.yml
+- hosts: mr
+  gather_facts: "True"
+  become: "yes"
+  roles:
+    - mr

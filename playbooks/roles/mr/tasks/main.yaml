@@ -1,0 +1,110 @@
+---
+  # tasks file for roles/prepare_test
+
+- name:
+  file:
+    path: "{{ kafka_data_volume }}"
+    state: directory
+
+- name: Download mr MsgRtrApi.properties conf file
+  get_url:
+    url: "{{ mr_msgrtrapi_config_file }}"
+    dest: "{{ mr_msgrtrapi_volume }}"
+
+- name: Download kafka_start.sh file
+  get_url:
+    url: "{{ kafka_start_config_file }}"
+    dest: "{{ kafka_start_volume }}"
+
+- name: Download cadi.properties file
+  get_url:
+    url: "{{ mr_cadi_config_file }}"
+    dest: "{{ mr_cadi_volume }}"
+
+- name: Download key conf file
+  get_url:
+    url: "{{ mr_key_config_file }}"
+    dest: "{{ mr_key_volume }}"
+
+- name: Start Zookeper
+  docker_container:
+    name: "{{ mr_zookeper_name }}"
+    image: "{{ zookeper_image }}:{{ zookeeper_version }}"
+    state: started
+    ports:
+      - "{{ zookeeper_port }}:2181"
+    volumes:
+      - "{{ zookeeper_volume }}:/opt/zookeeper-3.4.9/data"
+  register: zookeeper
+  tags:
+    - creation
+
+- name: Start kafka
+  docker_container:
+    name: "{{ mr_kafka_name }}"
+    image: "{{ kafka_image }}:{{ kafka_version }}"
+    state: started
+    ports:
+      - "{{ kafka_port }}:{{ kafka_port }}"
+    env:
+      KAFKA_ADVERTISED_HOST_NAME: "{{ kafka_advertised_host_name }}"
+      KAFKA_ZOOKEEPER_CONNECT: "{{ kafka_zookeeper_connect }}"
+      KAFKA_BROKER_ID: 1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - "{{ kafka_data_volume }}:/kafka"
+      - "{{ kafka_start_volume }}:/start-kafka.sh"
+    links:
+     - "{{ mr_zookeper_name }}:mr-zookeeper-docker-instance"
+  register: kafka
+  tags:
+    - creation
+
+- name: retrieve kafka and zookeper IPs
+  set_fact:
+    zookeeper_ip_address: "{{ zookeeper.ansible_facts.docker_container.\
+                         NetworkSettings.IPAddress }}"
+    kafka_ip_address: "{{ kafka.ansible_facts.docker_container.\
+                     NetworkSettings.IPAddress }}"
+
+- name: wait for zookeeper to be up and running
+  wait_for:
+    port: "{{ zookeeper_port }}"
+    timeout: 900
+    host: "{{ zookeeper_ip_address }}"
+
+- name: wait for kafka to be up and running
+  wait_for:
+    port: "{{ kafka_port }}"
+    timeout: 900
+    host: "{{ kafka_ip_address }}"
+
+- name: adapt config file (config zookeeper)
+  lineinfile:
+    path: "{{ mr_msgrtrapi_volume }}"
+    regexp: '^config\.zk\.servers'
+    line: 'config.zk.servers={{zookeeper_ip_address}}'
+
+- name: adapt config file (config kafka)
+  lineinfile:
+    path: "{{ mr_msgrtrapi_volume }}"
+    regexp: '^kafka\.metadata\.broker\.list'
+    line: 'kafka.metadata.broker.list={{kafka_ip_address}}:{{kafka_port}}'
+
+- name: Start message router
+  docker_container:
+    name: "{{ mr_name }}"
+    image: "nexus3.onap.org:10001/{{ mr_image }}:{{ mr_version }}"
+    ports: "{{ mr_ports }}"
+    volumes:
+      - "{{ mr_msgrtrapi_volume}}:/appl/dmaapMR1/bundleconfig/etc/\
+      appprops/MsgRtrApi.properties"
+      - "{{ mr_cadi_volume}}:/appl/dmaapMR1/etc/cadi.properties"
+      - "{{ mr_key_volume}}:/appl/dmaapMR1/etc/keyfile"
+    links:
+      - "{{ mr_zookeper_name }}:mr-zookeeper-docker-instance"
+      - "{{ mr_kafka_name }}:mr-kafka-docker-instance"
+
+  register: mr
+  tags:
+    - creation
