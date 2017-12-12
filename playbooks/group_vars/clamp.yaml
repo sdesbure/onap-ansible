@@ -5,7 +5,7 @@ clamp_repo_path: /opt/clamp
 
 
 clamp_container_name: clamp
-clamp_docker_image:  onap/clamp
+clamp_docker_image: onap/clamp
 clamp_version: v1.1.0
 clamp_port: 8080
 clamp_volume: "{{ clamp_repo_path }}/extra/docker/clamp/config/"
