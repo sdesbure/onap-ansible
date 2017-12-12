@@ -11,7 +11,7 @@
 - name: Start maria DB container
   docker_container:
     name: "{{ vid_maria_name }}"
-    image: "{{ maria_image }}"
+    image: "{{ default_docker_repo }}{{ maria_image }}:{{ maria_version }}"
     state: started
     restart_policy: unless-stopped
     env:

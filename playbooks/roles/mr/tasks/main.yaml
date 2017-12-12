@@ -29,7 +29,8 @@
 - name: Start Zookeper
   docker_container:
     name: "{{ mr_zookeper_name }}"
-    image: "{{ zookeper_image }}:{{ zookeeper_version }}"
+    image:
+      "{{ default_docker_repo }}{{ zookeper_image }}:{{ zookeeper_version }}"
     state: started
     ports:
       - "{{ zookeeper_port }}:2181"
@@ -42,7 +43,7 @@
 - name: Start kafka
   docker_container:
     name: "{{ mr_kafka_name }}"
-    image: "{{ kafka_image }}:{{ kafka_version }}"
+    image: "{{ default_docker_repo }}{{ kafka_image }}:{{ kafka_version }}"
     state: started
     ports:
       - "{{ kafka_port }}:{{ kafka_port }}"
@@ -94,7 +95,7 @@
 - name: Start message router
   docker_container:
     name: "{{ mr_name }}"
-    image: "nexus3.onap.org:10001/{{ mr_image }}:{{ mr_version }}"
+    image: "{{ default_docker_repo }}{{ mr_image }}:{{ mr_version }}"
     ports: "{{ mr_ports }}"
     volumes:
       - "{{ mr_msgrtrapi_volume}}:/appl/dmaapMR1/bundleconfig/etc/\
