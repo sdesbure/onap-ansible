@@ -1,0 +1,21 @@
+---
+virtual_machines:
+  mr:
+    vm_number: 1
+    short_name: mr
+    flavor: "{{ flavor_large }}"
+    volumes:
+      - name: default
+        # If name is set to default, the naming will be
+        # 'vm_name-volume_number-vm_number'
+        size: "{{ default_volume_size }}"
+      - name: default
+        # If name is set to default, the naming will be
+        # 'vm_name-volume_number-vm_number'
+        size: "{{ default_volume_size }}"
+    groups:
+      - server
+      - docker
+      - git
+      - volume
+    ip_addr_fact: mr_ip_addr
