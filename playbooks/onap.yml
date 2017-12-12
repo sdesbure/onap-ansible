@@ -69,6 +69,16 @@
     - prepare-vms
   tags: prepare
 
+- name: Apply role MR
+  gather_facts: "no"
+  become: "yes"
+  hosts: mr
+  serial: '{{ serial|default("0") }}'
+  roles:
+    - role: mr
+      tags: mr
+      when: enable_mr | bool
+
 - name: Apply role VID
   gather_facts: "no"
   become: "yes"
