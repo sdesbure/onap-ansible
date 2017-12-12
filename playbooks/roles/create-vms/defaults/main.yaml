@@ -22,6 +22,7 @@ virtual_machines:
       - server
       - docker
       - git
+      - private_docker
       - volume
     ip_addr_fact: clamp_ip_addr
   mr:
