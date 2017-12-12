@@ -9,6 +9,21 @@ dns:
   ip_addr_fact: dns_ip_addr
 
 virtual_machines:
+  clamp:
+    vm_number: 1
+    short_name: clamp
+    flavor: "{{ flavor_medium }}"
+    volumes:
+      - name: default
+        # If name is set to default, the naming will be
+        # 'vm_name-volume_number-vm_number'
+        size: "{{ default_volume_size }}"
+    groups:
+      - server
+      - docker
+      - git
+      - volume
+    ip_addr_fact: clamp_ip_addr
   mr:
     vm_number: 1
     short_name: mr
