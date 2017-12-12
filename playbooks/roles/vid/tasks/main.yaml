@@ -1,4 +1,58 @@
 ---
-- include_tasks: vid.yaml
+- name: retrieve needed files
+  git:
+    repo: "{{ vid_repo }}"
+    version: "{{ vid_branch }}"
+    dest: "{{ onap_etc_path }}/vid"
+    depth: 1
   tags:
-    - vid
+    - creation
+
+- name: Start maria DB container
+  docker_container:
+    name: "{{ vid_maria_name }}"
+    image: "{{ maria_image }}"
+    state: started
+    restart_policy: unless-stopped
+    env:
+      MYSQL_DATABASE: "{{ vid_mysql_db }}"
+      MYSQL_USER: "{{ vid_maria_user }}"
+      MYSQL_PASSWORD: "{{ vid_maria_password }}"
+      MYSQL_ROOT_PASSWORD: "{{ vid_db_root_password }}"
+    volumes:
+      - "{{onap_etc_path}}/vid/lf_config/vid-my.cnf:/etc/mysql/my.cnf"
+      - "{{onap_etc_path}}\
+        /vid/lf_config/vid-pre-init.sql:\
+        /docker-entrypoint-initdb.d/vid-pre-init.sql"
+      - "{{ vid_mariadb_volume }}:/var/lib/mysql"
+  register: mariadb
+  tags:
+    - creation
+
+- name: retrieve mariadb ip address
+  set_fact:
+    mariadb_ip_address: "{{ mariadb.ansible_facts.docker_container.NetworkSettings.IPAddress }}"
+
+- name: wait for mariadb to be up and running
+  wait_for:
+    port: 3306
+    delay: 10
+    timeout: 900
+    host: "{{ mariadb_ip_address }}"
+
+- name: Start vid image
+  docker_container:
+    name: "{{ vid_container_name }}"
+    image: "{{ nexus_docker_repo }}/{{ vid_docker }}:{{ vid_version }}"
+    state: started
+    restart_policy: unless-stopped
+    env:
+      VID_MYSQL_DBNAME: "{{ vid_mysql_db }}"
+      VID_MYSQL_PASS: "{{ vid_maria_password }}"
+    ports:
+      - "{{ vid_port }}:8080"
+    links:
+     - "{{ vid_maria_name }}:vid-mariadb-docker-instance"
+  tags:
+    - creation
+    - configuration
