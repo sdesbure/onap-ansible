@@ -58,7 +58,7 @@
     state: mounted
   when: inventory_hostname in groups['volume']
   with_together:
-    - "{{ volume_locations.map(attribute='host') | list }}"
+    - "{{ volume_locations }}"
     - "{{ volume_devs }}"
 
 - name: Log into private ONAP registry
