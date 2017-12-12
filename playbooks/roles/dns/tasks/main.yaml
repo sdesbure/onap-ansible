@@ -1,5 +1,4 @@
 ---
-- debug: msg="{{ dns_ip_addr }}"
 - name: retrieve all IP addresses
   set_fact:
     "{{ item }}": "{{ hostvars['jumphost'][item] }}"
