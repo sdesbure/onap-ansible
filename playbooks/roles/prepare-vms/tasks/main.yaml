@@ -1,4 +1,31 @@
 ---
+- name: check if vm is using resolvconf service or not
+  stat:
+    path: /etc/resolvconf/
+  register: resolvconf
+
+- name: add dns own server entry in resolvconf head
+  lineinfile:
+    path: /etc/resolvconf/resolv.conf.d/head
+    line: "nameserver {{ dns_ip_addr }}"
+    insertafter: EOF
+  when: resolvconf.stat.exists and inventory_hostname not in groups['dns']
+  notify: update resolvconf
+
+- name: add dns own server entry in resolv.conf
+  lineinfile:
+    path: /etc/resolv.conf
+    line: "nameserver {{ dns_ip_addr }}"
+    insertbefore: BOF
+  when: not (resolvconf.stat.exists or inventory_hostname in groups['dns'])
+
+- name: add dns own server entry in dhclient.conf so it's OK on reboot
+  lineinfile:
+    path: /etc/dhcp/dhclient.conf
+    line: "prepend domain-name-servers {{ dns_ip_addr }};"
+    insertafter: "^#prepend"
+  when: not (resolvconf.stat.exists or inventory_hostname in groups['dns'])
+
 - name: install required packages
   include_tasks: install_DEBIAN.yaml
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
@@ -7,6 +34,7 @@
   pip:
     name: pip
     state: latest
+  when: inventory_hostname in groups['docker']
 
 - name: install docker python package
   pip:
@@ -48,15 +76,18 @@
     default_docker_repo:
       "{{ default_docker_repo }}\
        {{ (default_docker_repo[-1:] == '/') | ternary('', '/') }}"
-  when: default_docker_repo is defined
+  when: default_docker_repo is defined and
+        inventory_hostname in groups['docker']
 
 - name: set default_docker_repo to '' when not defined
   set_fact:
     default_docker_repo: ""
-  when: default_docker_repo is not defined
+  when: default_docker_repo is not defined and
+        inventory_hostname in groups['docker']
 
 - name: retrieve docker images
   docker_image:
     name: "{{ item }}"
     state: present
   with_items: "{{ containers }}"
+  when: inventory_hostname in groups['docker']

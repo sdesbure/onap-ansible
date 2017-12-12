@@ -8,8 +8,66 @@
 - name: create security elements
   import_tasks: security.yaml
 
+- name: create dns elements
+  include_tasks: dns.yaml
+
 - name: create necessary virtual machines and register
   include_tasks: virtual_machine.yaml
   with_dict: "{{ virtual_machines }}"
   loop_control:
     loop_var: vm
+
+# We fill undefined IP addresses in order to be able to configure DNS
+# It won't be necessary when all VM will be create through ansible
+- name: set ip variables if not set
+  set_fact: {"{{ item.1 }}":
+             "{{ (oam_network_cidr | ipaddr('net') |
+                 ipaddr(((item.0 + 10) | string))).split('/') |
+                 list | first }}" }
+  with_indexed_items:
+    - aai1_ip_addr
+    - aai2_ip_addr
+    - appc_ip_addr
+    - dcae_ip_addr
+    - dns_ip_addr
+    - so_ip_addr
+    - mr_ip_addr
+    - policy_ip_addr
+    - portal_ip_addr
+    - robot_ip_addr
+    - sdc_ip_addr
+    - sdnc_ip_addr
+    - vid_ip_addr
+    - clamp_ip_addr
+    - openo_ip_addr
+  when: vars[item.1] is not defined
+
+- name: give dns_hostname to every hosts
+  set_fact:
+    dns_ip_addr: "{{  hostvars['jumphost']['dns_ip_addr'] }}"
+  delegate_to: "{{ item }}"
+  delegate_facts: "yes"
+  with_inventory_hostnames:
+    - server
+
+- name: retrieve openstack network facts
+  os_networks_facts:
+    auth:
+      project_name: "{{ project_name }}"
+    name: "{{ public_network_name }}"
+  register: os_networks_facts
+  when: public_network_id is not defined
+
+- name: set public_network_id facts
+  set_fact:
+    public_network_id:
+      "{{ os_networks_facts.ansible_facts.openstack_networks.0.id }}"
+  when: public_network_id is not defined
+
+- name: give public network id to robot vms
+  set_fact:
+    public_network_id: "{{  hostvars['jumphost']['public_network_id'] }}"
+  delegate_to: "{{ item }}"
+  delegate_facts: "yes"
+  with_inventory_hostnames:
+    - robot

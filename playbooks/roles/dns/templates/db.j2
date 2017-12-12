@@ -1,0 +1,142 @@
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     {{ dns_zone }}. admin.{{ dns_zone }}. (
+                        20170221        ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+; name servers - NS records
+    IN      NS      {{ dns_zone }}.
+
+; name servers - A records
+{{ dns_zone }}.          IN      A       {{ dns_ip_addr }}
+
+;
+vm1.aai.{{ dns_zone }}.       IN      A       {{ aai1_ip_addr }}
+c1.vm1.aai.{{ dns_zone }}.    IN      A       {{ aai1_ip_addr }}
+c2.vm1.aai.{{ dns_zone }}.    IN      A       {{ aai1_ip_addr }}
+c3.vm1.aai.{{ dns_zone }}.    IN      A       {{ aai1_ip_addr }}
+
+vm2.aai.{{ dns_zone }}.       IN      A       {{ aai2_ip_addr }}
+c1.vm2.aai.{{ dns_zone }}.    IN      A       {{ aai2_ip_addr }}
+c2.vm2.aai.{{ dns_zone }}.    IN      A       {{ aai2_ip_addr }}
+c3.vm2.aai.{{ dns_zone }}.    IN      A       {{ aai2_ip_addr }}
+
+vm1.appc.{{ dns_zone }}.      IN      A       {{ appc_ip_addr }}
+c1.vm1.appc.{{ dns_zone }}.   IN      A       {{ appc_ip_addr }}
+c2.vm1.appc.{{ dns_zone }}.   IN      A       {{ appc_ip_addr }}
+
+vm1.sdc.{{ dns_zone }}.      IN      A       {{ sdc_ip_addr }}
+c1.vm1.sdc.{{ dns_zone }}.   IN      A       {{ sdc_ip_addr }}
+c2.vm1.sdc.{{ dns_zone }}.   IN      A       {{ sdc_ip_addr }}
+c3.vm1.sdc.{{ dns_zone }}.   IN      A       {{ sdc_ip_addr }}
+c4.vm1.sdc.{{ dns_zone }}.   IN      A       {{ sdc_ip_addr }}
+
+vm1.dcae.{{ dns_zone }}.           IN      A       {{ dcae_ip_addr }}
+c1.vm1.dcae.{{ dns_zone }}.        IN      A       {{ dcae_ip_addr }}
+c2.vm1.dcae.{{ dns_zone }}.        IN      A       {{ dcae_ip_addr }}
+c3.vm1.dcae.{{ dns_zone }}         IN      A       {{ dcae_ip_addr }}
+
+vm1.mso.{{ dns_zone }}.       IN      A       {{ so_ip_addr }}
+c1.vm1.mso.{{ dns_zone }}.    IN      A       {{ so_ip_addr }}
+c1.vm1.mso.{{ dns_zone }}.    IN      A       {{ so_ip_addr }}
+
+vm1.policy.{{ dns_zone }}.    IN      A       {{ policy_ip_addr }}
+c1.vm1.policy.{{ dns_zone }}. IN      A       {{ policy_ip_addr }}
+c2.vm1.policy.{{ dns_zone }}. IN      A       {{ policy_ip_addr }}
+c3.vm1.policy.{{ dns_zone }}. IN      A       {{ policy_ip_addr }}
+c4.vm1.policy.{{ dns_zone }}. IN      A       {{ policy_ip_addr }}
+c5.vm1.policy.{{ dns_zone }}. IN      A       {{ policy_ip_addr }}
+c6.vm1.policy.{{ dns_zone }}. IN      A       {{ policy_ip_addr }}
+c7.vm1.policy.{{ dns_zone }}. IN      A       {{ policy_ip_addr }}
+c8.vm1.policy.{{ dns_zone }}. IN      A       {{ policy_ip_addr }}
+
+vm1.sdnc.{{ dns_zone }}.      IN      A       {{ sdnc_ip_addr }}
+c1.vm1.sdnc.{{ dns_zone }}.   IN      A       {{ sdnc_ip_addr }}
+c2.vm1.sdnc.{{ dns_zone }}.   IN      A       {{ sdnc_ip_addr }}
+c3.vm1.sdnc.{{ dns_zone }}.   IN      A       {{ sdnc_ip_addr }}
+c4.vm1.sdnc.{{ dns_zone }}.   IN      A       {{ sdnc_ip_addr }}
+
+vm1.vid.{{ dns_zone }}.       IN      A       {{ vid_ip_addr }}
+c1.vm1.vid.{{ dns_zone }}.    IN      A       {{ vid_ip_addr }}
+c2.vm1.vid.{{ dns_zone }}.    IN      A       {{ vid_ip_addr }}
+
+vm1.portal.{{ dns_zone }}.           IN      A       {{ portal_ip_addr }}
+c1.vm1.portal.{{ dns_zone }}.        IN      A       {{ portal_ip_addr }}
+c2.vm1.portal.{{ dns_zone }}.        IN      A       {{ portal_ip_addr }}
+
+vm1.robot.{{ dns_zone }}.           IN      A       {{ robot_ip_addr }}
+c1.vm1.robot.{{ dns_zone }}.        IN      A       {{ robot_ip_addr }}
+c2.vm1.robot.{{ dns_zone }}.        IN      A       {{ robot_ip_addr }}
+
+vm1.clamp.{{ dns_zone }}.           IN      A       {{ clamp_ip_addr }}
+c1.vm1.clamp.{{ dns_zone }}.        IN      A       {{ clamp_ip_addr }}
+c2.vm1.clamp.{{ dns_zone }}.        IN      A       {{ clamp_ip_addr }}
+
+;vm1.aaf.{{ dns_zone }}.	IN	A	aaf_ip_addr
+
+vm1.mr.{{ dns_zone }}.	IN	A	{{ mr_ip_addr }}
+
+vm1.openo.{{ dns_zone }}. IN  A   {{ openo_ip_addr }}
+
+
+;CNAMES
+;A&AI
+aai.api.{{ dns_zone }}.	IN 	CNAME 	vm1.aai.{{ dns_zone }}.
+aai.ui.{{ dns_zone }}.    IN  CNAME   vm1.aai.{{ dns_zone }}.
+aai.searchservice.{{ dns_zone }}.     IN      CNAME   vm1.aai.{{ dns_zone }}.
+aai.hbase.{{ dns_zone }}.	IN 	CNAME	vm2.aai.{{ dns_zone }}.
+aai.gremlinserver.{{ dns_zone }}.	IN 	CNAME 	vm2.aai.{{ dns_zone }}.
+aai.elasticsearch.{{ dns_zone }}.	IN 	CNAME 	vm2.aai.{{ dns_zone }}.
+
+;APPC
+appc.api.{{ dns_zone }}.	IN	CNAME	vm1.appc.{{ dns_zone }}.
+
+;ASDC
+sdc.api.{{ dns_zone }}.	IN	CNAME	vm1.sdc.{{ dns_zone }}.
+
+;DCAE
+dcae.api.{{ dns_zone }}.	IN	CNAME	vm1.dcae.{{ dns_zone }}.
+
+;SO
+mso.api.{{ dns_zone }}.	IN	CNAME	vm1.mso.{{ dns_zone }}.
+
+;Policy
+policy.api.{{ dns_zone }}. 	IN	CNAME	vm1.policy.{{ dns_zone }}.
+
+;SDNC
+sdnc.api.{{ dns_zone }}. 	IN	CNAME    vm1.sdnc.{{ dns_zone }}.
+
+;VID
+vid.api.{{ dns_zone }}.	IN	CNAME	vm1.vid.{{ dns_zone }}.
+
+;PORTAL
+portal.api.{{ dns_zone }}.	IN	CNAME	vm1.portal.{{ dns_zone }}.
+
+;Message Router
+;mr.api.{{ dns_zone }}.	IN	CNAME	vm1.mr.{{ dns_zone }}.
+ueb.api.{{ dns_zone }}.	IN	CNAME	vm1.mr.{{ dns_zone }}.
+;dbc.api.{{ dns_zone }}.	IN	CNAME  	vm1.mr.{{ dns_zone }}.
+;drprov.api.{{ dns_zone }}.	IN	CNAME  	vm1.mr.{{ dns_zone }}.
+
+;CLAMP
+clamp.api.{{ dns_zone }}.	IN	CNAME	vm1.clamp.{{ dns_zone }}.
+
+;ROBOT/SNIRO
+robot.api.{{ dns_zone }}.	IN	CNAME	vm1.robot.{{ dns_zone }}.
+sniro.api.{{ dns_zone }}.	IN	CNAME	vm1.robot.{{ dns_zone }}.
+
+;AAF
+;aaf.api.{{ dns_zone }}.	IN	CNAME	vm1.aaf.{{ dns_zone }}.
+
+;OPEN-O
+msb.api.{{ dns_zone }}. 	IN	CNAME   vm1.openo.{{ dns_zone }}.
+mvim.api.{{ dns_zone }}. 	IN	CNAME   vm1.openo.{{ dns_zone }}.
+vnfsdk.api.{{ dns_zone }}. 	IN	CNAME   vm1.openo.{{ dns_zone }}.
+vfc.api.{{ dns_zone }}. 	IN	CNAME   vm1.openo.{{ dns_zone }}.
+uui.api.{{ dns_zone }}. 	IN	CNAME   vm1.openo.{{ dns_zone }}.
+esr.api.{{ dns_zone }}. 	IN	CNAME   vm1.openo.{{ dns_zone }}.

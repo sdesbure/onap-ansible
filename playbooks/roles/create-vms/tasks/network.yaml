@@ -20,6 +20,7 @@
       "{{ (oam_network_cidr | ipaddr('net') |
            ipaddr(((subnet_pool_end) | string))).split('/') |
            list | first }}"
+    dns_nameservers: "{{ dns_list }}"
 
 - name: create router
   os_router:

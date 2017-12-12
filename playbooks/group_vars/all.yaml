@@ -4,6 +4,11 @@
 ##
 # Project
 ha_mode: "no"
+# Will work when all VM will be generated using ansible. Leave to no
+# for the moment
+use_dnsaas: "no"
+# email used for DNSaaS
+email: demo@onap.bzh
 project_name: onap_test
 
 # Network
@@ -13,8 +18,11 @@ oam_network_cidr: 192.168.12.0/24
 # Images
 default_image: debian-9
 default_user: debian
-## Used for legacy, will be removed soon
+
+## Needed for robot VM
 ubuntu_16_04_image: ubuntu-14.04-daily
+
+## Used for legacy, will be removed soon
 ubuntu_14_04_image: ubuntu-16.04-daily
 centos_7_image: centos-7
 
@@ -30,7 +38,7 @@ dns_list:
   - 10.4.0.16
 dnsaas_config_enabled: "no"
 # give the dcae domain where we should register our VMs
-dcae_domain: onap.bzh
+dns_domain: onap.bzh
 # Put the public and secret key to be used by DCAE
 dcae_public_key_path: "{{ ansible_user_dir }}/.ssh/id_rsa.pub"
 dcae_private_key_path: "{{ ansible_user_dir }}/.ssh/id_rsa"
@@ -89,43 +97,6 @@ enable_vid: "yes"
 enable_clamp: "yes"
 enable_openo: "yes"
 
-virtual_machines:
-  vid:
-    vm_number: 1
-    short_name: vid
-    flavor: "{{ flavor_medium }}"
-    volumes:
-      - name: default
-        # If name is set to default, the naming will be
-        # 'vm_name-volume_number-vm_number'
-        size: "{{ default_volume_size }}"
-    groups:
-      - server
-      - docker
-      - private_docker
-      - git
-      - volume
-    ip_addr_fact: vid_ip_addr
-  mr:
-    vm_number: 1
-    short_name: mr
-    flavor: "{{ flavor_large }}"
-    volumes:
-      - name: default
-        # If name is set to default, the naming will be
-        # 'vm_name-volume_number-vm_number'
-        size: "{{ default_volume_size }}"
-      - name: default
-        # If name is set to default, the naming will be
-        # 'vm_name-volume_number-vm_number'
-        size: "{{ default_volume_size }}"
-    groups:
-      - server
-      - docker
-      - git
-      - volume
-    ip_addr_fact: mr_ip_addr
-
 ##
 # Don't touch unless you know what to do
 ##
@@ -176,11 +147,11 @@ so_branch: master
 mr_branch: master
 policy_branch: master
 portal_branch: master
-robot_branch: master
 sdc_branch: master
 sdnc_branch: master
 clamp_branch: master
 vnfsdk_branch: master
+heat_branch: master
 
 aai_docker: v1.1.0
 aai_sparky_docker: v1.1.0
@@ -189,7 +160,6 @@ so_docker: v1.1.1
 dcae_docker: v1.1.0
 policy_docker: v1.1.1
 portal_docker: v1.3.0
-robot_docker: 1.1-STAGING-latest
 sdc_docker: v1.1.0
 sdnc_docker: v1.2.1
 clamp_docker: v1.1.0
@@ -222,12 +192,11 @@ mr_repo: http://gerrit.onap.org/r/dcae/demo/startup/message-router.git
 so_repo: http://gerrit.onap.org/r/so/docker-config.git
 policy_repo: http://gerrit.onap.org/r/policy/docker.git
 portal_repo: http://gerrit.onap.org/r/portal.git
-robot_repo: http://gerrit.onap.org/r/testsuite/properties.git
 sdc_repo: http://gerrit.onap.org/r/sdc.git
 sdnc_repo: http://gerrit.onap.org/r/sdnc/oam.git
-
 clamp_repo: http://gerrit.onap.org/r/clamp.git
 vnfsdk_repo: http://gerrit.onap.org/r/vnfsdk/refrepo.git
+heat_code_repo: http://gerrit.onap.org/r/demo.git
 
 
 maria_image: mariadb

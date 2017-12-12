@@ -16,6 +16,7 @@
     name: "{{ vid_maria_name }}"
     image: "{{ maria_image }}"
     state: started
+    restart_policy: unless-stopped
     env:
       MYSQL_DATABASE: "{{ vid_mysql_db }}"
       MYSQL_USER: "{{ vid_maria_user }}"
@@ -47,6 +48,7 @@
     name: "{{ vid_container_name }}"
     image: "{{ nexus_docker_repo }}/{{ vid_docker }}:{{ vid_version }}"
     state: started
+    restart_policy: unless-stopped
     env:
       VID_MYSQL_DBNAME: "{{ vid_mysql_db }}"
       VID_MYSQL_PASS: "{{ vid_maria_password }}"
