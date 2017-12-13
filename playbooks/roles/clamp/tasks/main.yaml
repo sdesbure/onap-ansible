@@ -1,17 +1,5 @@
 ---
-  # tasks file for roles/prepare_test
-
-# add repo (to be cleaned with default)
-- name: update server
-  apt:
-    name:
-      - ntp
-      - ntpdate
-      - make
-    update-cache: yes
-    state: present
-
-- name: Create /opt/clamp directory
+- name: create /opt/clamp directory
   file:
     path: "{{ clamp_repo_path }}"
     state: directory
@@ -26,7 +14,8 @@
   tags:
     - creation
 
-- replace:
+- name: replace hardcoded configuration
+  replace:
     path: "{{ clamp_env }}"
     regexp: "db:3306"
     replace: "{{ clamp_maria_name }}:{{ clamp_maria_port }}"
@@ -38,8 +27,6 @@
     state: started
     env:
       MYSQL_ROOT_PASSWORD: "{{ clamp_db_root_password }}"
-    ports:
-      - "{{ clamp_maria_port }}:3306"
     volumes:
       - "{{ volume_location }}"
       - "{{ clamp_maria_conf_volume }}:/etc/mysql/conf.d:ro"
@@ -48,11 +35,20 @@
   tags:
     - creation
 
-- name:
-  file:
-    path: "{{ clamp_volume }}"
-    state: directory
-    mode: 0755
+- name: retrieve mariadb ip address
+  set_fact:
+    mariadb_ip_address:
+      "{{ mariadb.ansible_facts.docker_container.NetworkSettings.IPAddress }}"
+  tags:
+    - creation
+
+- name: wait for mariadb to be up and running
+  wait_for:
+    port: 3306
+    timeout: 900
+    host: "{{ mariadb_ip_address }}"
+  tags:
+    - creation
 
 - name: Start clamp image
   docker_container:
