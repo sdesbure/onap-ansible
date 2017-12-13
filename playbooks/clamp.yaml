@@ -1,0 +1,5 @@
+---
+- hosts: clamp
+  become: "yes"
+  roles:
+    - clamp

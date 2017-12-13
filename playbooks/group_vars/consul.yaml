@@ -5,7 +5,7 @@ consul_name: consul
 consul_cluster_port: 8301
 consul_ui_port: 8500
 
-consul_volume: "{{ onap_etc_path }}/{{ onap_module_name }}/data-consul"
+consul_volume: "{{ onap_etc_path }}/data-consul"
 
 containers:
   - "{{ default_docker_repo }}{{ consul_image }}:{{ consul_version }}"

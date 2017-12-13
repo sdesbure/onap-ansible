@@ -1,4 +1,9 @@
 ---
+- name: create consul directory
+  file:
+    path: "{{ onap_etc_path }}/{{ onap_module_name }}"
+    state: directory
+
 - name: generate configuration file
   template:
     src: config.json.j2

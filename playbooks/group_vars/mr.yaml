@@ -3,7 +3,7 @@ onap_module_name: messagerouter
 
 consul_agent_name: consul_agent
 consul_ui_port: 8500
-consul_volume: "{{ onap_etc_path }}/{{ onap_module_name }}/consul_agent"
+consul_volume: "{{ onap_etc_path }}/consul_agent"
 
 # tasks file for roles/prepare_test
 # dmaap_repo: git.onap.org/dmaap/messagerouter
@@ -12,7 +12,7 @@ mr_zookeper_name: zookeeper
 zookeper_image: wurstmeister/zookeeper
 zookeeper_version: latest
 zookeeper_port: 2181
-zookeeper_volume: "{{ onap_etc_path }}/{{ onap_module_name }}/data-zookeeper"
+zookeeper_volume: "{{ onap_etc_path }}/data-zookeeper"
 
 dcae_gerrit_repo: "https://git.onap.org/dcae"
 mr_path_dcae: "demo/startup/message-router/plain/docker_files"
@@ -25,8 +25,8 @@ kafka_advertised_host_name: 172.17.0.1
 kafka_zookeeper_connect: "{{ mr_zookeper_name }}:{{ zookeeper_port }}"
 kafka_start_config_file: "{{ dcae_gerrit_repo }}/{{ mr_path_dcae }}\
                           /start-kafka.sh"
-kafka_start_volume: "{{ onap_etc_path }}/{{ onap_module_name }}/start_kafka.sh"
-kafka_data_volume: "{{ onap_etc_path }}/{{ onap_module_name }}/data-kafka"
+kafka_start_volume: "{{ onap_etc_path }}/start_kafka.sh"
+kafka_data_volume: "{{ onap_etc_path }}/data-kafka"
 
 mr_name: dmaap
 mr_msgrtrapi_config_file: "{{ dcae_gerrit_repo }}/{{ mr_path_dcae }}\

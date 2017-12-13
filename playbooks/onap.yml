@@ -79,6 +79,16 @@
       tags: consul
       when: enable_consul | bool
 
+- name: Apply role CLAMP
+  gather_facts: "no"
+  become: "yes"
+  hosts: clamp
+  serial: '{{ serial|default("0") }}'
+  roles:
+    - role: clamp
+      tags: clamp
+      when: enable_clamp | bool
+
 - name: Apply role MR
   gather_facts: "no"
   become: "yes"

@@ -1,0 +1,73 @@
+---
+- name: create clamp directory
+  file:
+    path: "{{ clamp_repo_path }}"
+    state: directory
+
+- name: retrieve clamp needed files
+  git:
+    repo: "{{ clamp_repo }}"
+    version: "{{ clamp_branch }}"
+    dest: "{{ clamp_repo_path }}"
+    depth: 1
+    force: yes
+  tags:
+    - creation
+
+- name: replace hardcoded configuration
+  replace:
+    path: "{{ clamp_env }}"
+    regexp: "db:3306"
+    replace: "{{ clamp_maria_name }}:{{ clamp_maria_port }}"
+
+- name: Start maria DB container
+  docker_container:
+    name: "{{ clamp_maria_name }}"
+    image: "{{ maria_image }}:{{ clamp_maria_version }}"
+    state: started
+    env:
+      MYSQL_ROOT_PASSWORD: "{{ clamp_db_root_password }}"
+    volumes:
+      - "{{ volume_location }}"
+      - "{{ clamp_maria_conf_volume }}:/etc/mysql/conf.d:ro"
+      - "{{ clamp_maria_sql_volume }}:/docker-entrypoint-initdb.d:ro"
+  register: mariadb
+  tags:
+    - creation
+
+- name: retrieve mariadb ip address
+  set_fact:
+    mariadb_ip_address:
+      "{{ mariadb.ansible_facts.docker_container.NetworkSettings.IPAddress }}"
+  tags:
+    - creation
+
+- name: wait for mariadb to be up and running
+  wait_for:
+    port: 3306
+    timeout: 900
+    host: "{{ mariadb_ip_address }}"
+  tags:
+    - creation
+
+- name: Start clamp image
+  docker_container:
+    name: "{{ clamp_container_name }}"
+    image: "{{ clamp_docker_image }}:{{clamp_version}}"
+    env_file: "{{ clamp_env }}"
+    volumes:
+      - "{{ clamp_volume }}:/opt/clamp/config:rw"
+    state: started
+    ports:
+      - "{{ clamp_port }}:8080"
+    links:
+     - "{{ clamp_maria_name }}:clamp-mariadb-docker-instance"
+  tags:
+    - creation
+
+- name: add consul agent
+  import_tasks: consul_agent.yaml
+  tags:
+    - creation
+    - configuration
+    - consul
