@@ -1,21 +1,36 @@
 ---
 - name: create project and add current user
   import_tasks: project.yaml
+  tags:
+    - creation
+    - project
 
 - name: create needed network
   import_tasks: network.yaml
+  tags:
+    - creation
+    - network
 
 - name: create security elements
   import_tasks: security.yaml
+  tags:
+    - creation
+    - security
 
 - name: create dns elements
-  include_tasks: dns.yaml
+  import_tasks: dns.yaml
+  tags:
+    - creation
+    - dns
 
 - name: create necessary virtual machines and register
-  include_tasks: virtual_machine.yaml
+  include: virtual_machine.yaml
   with_dict: "{{ virtual_machines }}"
   loop_control:
     loop_var: vm
+  tags:
+    - creation
+    - vm
 
 # We fill undefined IP addresses in order to be able to configure DNS
 # It won't be necessary when all VM will be create through ansible
@@ -41,6 +56,9 @@
     - clamp_ip_addr
     - openo_ip_addr
   when: vars[item.1] is not defined
+  tags:
+    - creation
+    - configuration
 
 - name: give dns_hostname to every hosts
   set_fact:
@@ -49,6 +67,9 @@
   delegate_facts: "yes"
   with_inventory_hostnames:
     - server
+  tags:
+    - creation
+    - configuration
 
 - name: retrieve openstack network facts
   os_networks_facts:
@@ -57,12 +78,18 @@
     name: "{{ public_network_name }}"
   register: os_networks_facts
   when: public_network_id is not defined
+  tags:
+    - creation
+    - configuration
 
 - name: set public_network_id facts
   set_fact:
     public_network_id:
       "{{ os_networks_facts.ansible_facts.openstack_networks.0.id }}"
   when: public_network_id is not defined
+  tags:
+    - creation
+    - configuration
 
 - name: give public network id to robot vms
   set_fact:
@@ -70,4 +97,8 @@
   delegate_to: "{{ item }}"
   delegate_facts: "yes"
   with_inventory_hostnames:
+    - robot
+  tags:
+    - creation
+    - configuration
     - robot

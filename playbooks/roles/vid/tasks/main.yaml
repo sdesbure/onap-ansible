@@ -32,12 +32,16 @@
 - name: retrieve mariadb ip address
   set_fact:
     mariadb_ip_address: "{{ mariadb.ansible_facts.docker_container.NetworkSettings.IPAddress }}"
+  tags:
+    - creation
 
 - name: wait for mariadb to be up and running
   wait_for:
     port: 3306
     timeout: 900
     host: "{{ mariadb_ip_address }}"
+  tags:
+    - creation
 
 - name: Start vid image
   docker_container:
@@ -55,3 +59,10 @@
   tags:
     - creation
     - configuration
+
+- name: add consul agent
+  import_tasks: consul_agent.yaml
+  tags:
+    - creation
+    - configuration
+    - consul

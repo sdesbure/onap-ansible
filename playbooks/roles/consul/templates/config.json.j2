@@ -1,0 +1,20 @@
+{
+  "advertise_addr": "{{ ansible_default_ipv4.address }}",
+  "advertise_addr_wan": "{{ ansible_ssh_host }}",
+  "bind_addr": "0.0.0.0",
+{% if groups.consul | length == 1 %}
+  "bootstrap": true,
+{% else %}
+  "bootstrap_expect": {{ groups.consul | length }},
+{% endif %}
+  "client_addr": "0.0.0.0",
+  "datacenter": "{{ consul_datacenter }}",
+  "data_dir": "/consul/data",
+  "log_level": "DEBUG",
+  "node_name": "{{ ansible_hostname }}",
+{% if groups.consul | length > 1 %}
+  "retry_join": ["{{ hostvars[groups.consul.0]['ansible_default_ipv4']['address'] }}"],
+{% endif %}
+  "server": true,
+  "ui": true
+}

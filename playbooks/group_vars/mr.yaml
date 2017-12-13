@@ -1,10 +1,14 @@
 ---
 onap_module_name: messagerouter
 
+consul_agent_name: consul_agent
+consul_ui_port: 8500
+consul_volume: "{{ onap_etc_path }}/{{ onap_module_name }}/consul_agent"
+
 # tasks file for roles/prepare_test
 # dmaap_repo: git.onap.org/dmaap/messagerouter
 # dmaap_branch: master
-mr_zookeper_name: zookeper
+mr_zookeper_name: zookeeper
 zookeper_image: wurstmeister/zookeeper
 zookeeper_version: latest
 zookeeper_port: 2181
@@ -37,13 +41,14 @@ mr_key_volume: "{{ onap_etc_path }}/{{ onap_module_name }}/mykey"
 mr_image: attos/dmaap
 mr_version: latest
 mr_ports:
-  - "3904:3904"
-  - "3905:3905"
+  public: 3904
+  other: 3905
 
 containers:
   - "{{ default_docker_repo }}{{ kafka_image }}:{{ kafka_version }}"
   - "{{ default_docker_repo }}{{ zookeper_image }}:{{ zookeeper_version }}"
   - "{{ default_docker_repo }}{{ mr_image }}:{{ mr_version }}"
+  - "{{ default_docker_repo }}{{ consul_image }}:{{ consul_version }}"
 
 volume_locations:
   - "{{ kafka_data_volume }}"

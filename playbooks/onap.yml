@@ -69,6 +69,16 @@
     - prepare-vms
   tags: prepare
 
+- name: Apply role consul
+  gather_facts: "no"
+  become: "yes"
+  hosts: consul
+  serial: '{{ serial|default("0") }}'
+  roles:
+    - role: consul
+      tags: consul
+      when: enable_consul | bool
+
 - name: Apply role MR
   gather_facts: "no"
   become: "yes"

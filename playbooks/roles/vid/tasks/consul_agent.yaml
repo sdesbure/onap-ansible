@@ -1,0 +1,50 @@
+---
+- name: ensure directories for consul agent is present
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ consul_volume }}/config/scripts"
+    - "{{ consul_volume }}/config/bin"
+
+- name: generate mariadb script
+  template:
+    src: consul/mariadb-health.sh.j2
+    dest: "{{ consul_volume }}/config/scripts/mariadb-health.sh"
+    mode: 0777
+  notify: restart consul agent container
+
+- name: copy bins to their directory
+  copy:
+    src: "{{ item }}"
+    dest: "{{ consul_volume }}/config/bin"
+    mode: 0777
+  with_items:
+    - consul/mysqladmin
+  notify: restart consul agent container
+
+- name: generate configuration file
+  template:
+    src: consul/config.json.j2
+    dest: "{{ onap_etc_path }}/{{ onap_module_name }}/config.json"
+  notify: restart consul agent container
+
+- name: start consul agent
+  docker_container:
+    name: "{{ consul_agent_name }}"
+    image: "{{ default_docker_repo }}{{ consul_image }}:{{ consul_version }}"
+    links:
+      - "{{ vid_maria_name }}:{{ vid_maria_name }}"
+    ports:
+      - 8300:8300
+      - 8301:8301
+      - 8302:8302
+      - 8301:8301/udp
+      - 8302:8302/udp
+      - "{{ consul_ui_port}}:8500"
+    volumes:
+      - "{{ consul_volume }}:/consul"
+      - "{{ onap_etc_path }}/{{ onap_module_name }}/config.json:\
+        /consul/config/config.json"
+  tags:
+    - creation

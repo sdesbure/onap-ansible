@@ -77,6 +77,9 @@ vm1.clamp.{{ dns_zone }}.           IN      A       {{ clamp_ip_addr }}
 c1.vm1.clamp.{{ dns_zone }}.        IN      A       {{ clamp_ip_addr }}
 c2.vm1.clamp.{{ dns_zone }}.        IN      A       {{ clamp_ip_addr }}
 
+vm1.consul.{{ dns_zone }}.           IN      A       {{ consul_ip_addr }}
+c1.vm1.consul.{{ dns_zone }}.           IN      A       {{ consul_ip_addr }}
+
 ;vm1.aaf.{{ dns_zone }}.	IN	A	aaf_ip_addr
 
 vm1.mr.{{ dns_zone }}.	IN	A	{{ mr_ip_addr }}
@@ -140,3 +143,6 @@ vnfsdk.api.{{ dns_zone }}. 	IN	CNAME   vm1.openo.{{ dns_zone }}.
 vfc.api.{{ dns_zone }}. 	IN	CNAME   vm1.openo.{{ dns_zone }}.
 uui.api.{{ dns_zone }}. 	IN	CNAME   vm1.openo.{{ dns_zone }}.
 esr.api.{{ dns_zone }}. 	IN	CNAME   vm1.openo.{{ dns_zone }}.
+
+;consul
+consul.api.{{ dns_zone }}. 	IN	CNAME   vm1.consul.{{ dns_zone }}.

@@ -1,0 +1,29 @@
+---
+- name: generate configuration file
+  template:
+    src: config.json.j2
+    dest: "{{ onap_etc_path }}/{{ onap_module_name }}/config.json"
+  notify: restart consul container
+  tags:
+    - creation
+    - configuration
+
+- name: start consul server
+  docker_container:
+    name: "{{ consul_name }}"
+    image: "{{ default_docker_repo }}{{ consul_image }}:{{ consul_version }}"
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - 8300:8300
+      - 8301:8301
+      - 8302:8302
+      - 8301:8301/udp
+      - 8302:8302/udp
+      - "{{ consul_ui_port }}:8500"
+    volumes:
+      - "{{ consul_volume }}:/consul/data"
+      - "{{ onap_etc_path }}/{{ onap_module_name }}/config.json\
+         :/consul/config/config.json"
+  tags:
+    - creation
