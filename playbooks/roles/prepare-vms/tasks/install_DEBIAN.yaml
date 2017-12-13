@@ -51,3 +51,10 @@
     update_cache: "yes"
   with_items: "{{ packages }}"
   when: packages is defined
+
+- name: set current user the right to use docker
+  user:
+    name: "{{ ansible_user_id }}"
+    groups: docker
+    append: "yes"
+  when: inventory_hostname in groups['docker']

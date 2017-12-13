@@ -198,6 +198,8 @@ clamp_repo: http://gerrit.onap.org/r/clamp.git
 vnfsdk_repo: http://gerrit.onap.org/r/vnfsdk/refrepo.git
 heat_code_repo: http://gerrit.onap.org/r/demo.git
 
-
 maria_image: mariadb
 maria_version: 10
+consul_version: 1.0.1
+consul_image: consul
+consul_datacenter: onap-central
