@@ -5,26 +5,36 @@
   file:
     path: "{{ kafka_data_volume }}"
     state: directory
+  tags:
+    - creation
 
 - name: Download mr MsgRtrApi.properties conf file
   get_url:
     url: "{{ mr_msgrtrapi_config_file }}"
     dest: "{{ mr_msgrtrapi_volume }}"
+  tags:
+    - creation
 
 - name: Download kafka_start.sh file
   get_url:
     url: "{{ kafka_start_config_file }}"
     dest: "{{ kafka_start_volume }}"
+  tags:
+    - creation
 
 - name: Download cadi.properties file
   get_url:
     url: "{{ mr_cadi_config_file }}"
     dest: "{{ mr_cadi_volume }}"
+  tags:
+    - creation
 
 - name: Download key conf file
   get_url:
     url: "{{ mr_key_config_file }}"
     dest: "{{ mr_key_volume }}"
+  tags:
+    - creation
 
 - name: Start Zookeper
   docker_container:
@@ -67,36 +77,48 @@
                          NetworkSettings.IPAddress }}"
     kafka_ip_address: "{{ kafka.ansible_facts.docker_container.\
                      NetworkSettings.IPAddress }}"
+  tags:
+    - creation
 
 - name: wait for zookeeper to be up and running
   wait_for:
     port: "{{ zookeeper_port }}"
     timeout: 900
     host: "{{ zookeeper_ip_address }}"
+  tags:
+    - creation
 
 - name: wait for kafka to be up and running
   wait_for:
     port: "{{ kafka_port }}"
     timeout: 900
     host: "{{ kafka_ip_address }}"
+  tags:
+    - creation
 
 - name: adapt config file (config zookeeper)
   lineinfile:
     path: "{{ mr_msgrtrapi_volume }}"
     regexp: '^config\.zk\.servers'
     line: 'config.zk.servers={{zookeeper_ip_address}}'
+  tags:
+    - creation
 
 - name: adapt config file (config kafka)
   lineinfile:
     path: "{{ mr_msgrtrapi_volume }}"
     regexp: '^kafka\.metadata\.broker\.list'
     line: 'kafka.metadata.broker.list={{kafka_ip_address}}:{{kafka_port}}'
+  tags:
+    - creation
 
 - name: Start message router
   docker_container:
     name: "{{ mr_name }}"
     image: "{{ default_docker_repo }}{{ mr_image }}:{{ mr_version }}"
-    ports: "{{ mr_ports }}"
+    ports:
+      - "{{ mr_ports.public }}:3904"
+      - "{{ mr_ports.other }}:3905"
     volumes:
       - "{{ mr_msgrtrapi_volume}}:/appl/dmaapMR1/bundleconfig/etc/\
       appprops/MsgRtrApi.properties"
@@ -109,3 +131,10 @@
   register: mr
   tags:
     - creation
+
+- name: add consul agent
+  import_tasks: consul_agent.yaml
+  tags:
+    - creation
+    - configuration
+    - consul

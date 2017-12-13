@@ -1,0 +1,46 @@
+{
+  "advertise_addr": "{{ ansible_default_ipv4.address }}",
+  "advertise_addr_wan": "{{ ansible_ssh_host }}",
+  "bind_addr": "0.0.0.0",
+  "client_addr": "0.0.0.0",
+  "datacenter": "{{ consul_datacenter }}",
+  "data_dir": "/consul/data",
+  "enable_script_checks": true,
+  "leave_on_terminate": true,
+  "log_level": "DEBUG",
+  "node_name": "{{ ansible_hostname }}",
+  "retry_join": ["{{ hostvars[groups.consul.0]['ansible_default_ipv4']['address'] }}"],
+  "server": false,
+  "services": [
+    {
+      "name": "Message Router - DMaaP",
+      "address": "mr.api.{{ dns_domain }}",
+      "port": {{ mr_ports.public }},
+      "tags": ["Message Router"],
+      "checks": [{
+        "http": "http://mr.api.{{ dns_domain }}:{{ mr_ports.public }}/topics",
+        "interval": "30s",
+        "timeout": "1s"
+      }]
+    },
+    {
+      "name": "Message Router - Kafka",
+      "tags": ["Message Router"],
+      "checks": [{
+        "script": "/consul/config/scripts/kafka-health.sh",
+        "interval": "30s",
+        "timeout": "1s"
+        }]
+    },
+    {
+      "name": "Message Router - ZooKeeper",
+      "tags": ["Message Router"],
+      "checks": [{
+        "script": "/consul/config/scripts/zookeeper-health.sh",
+        "interval": "30s",
+        "timeout": "1s"
+      }]
+    }
+  ],
+  "ui": true
+}

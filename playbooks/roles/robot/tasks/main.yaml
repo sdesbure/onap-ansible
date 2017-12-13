@@ -7,11 +7,16 @@
     - "{{ onap_etc_path }}/eteshare/logs"
     - "{{ onap_etc_path }}/eteshare/config"
     - "{{ onap_etc_path }}/testsuite"
+  tags:
+    - creation
 
 - name: generate vm_properties
   template:
     src: "vm_properties.py.j2"
     dest: "{{ onap_etc_path }}/eteshare/config/vm_properties.py"
+  tags:
+    - creation
+    - configuration
 
 - name: retrieve needed files from robot repo
   git:
@@ -37,6 +42,8 @@
     patterns:
       - "integration_*"
   register: files
+  tags:
+    - creation
 
 - name: copy files
   copy:
@@ -46,6 +53,8 @@
   with_items: "{{ files.files }}"
   loop_control:
     label: "{{ item.path }}"
+  tags:
+    - creation
 
 - name: "copy script files to {{ onap_etc_path }}"
   copy:
@@ -56,6 +65,8 @@
   with_items:
     - ete.sh
     - demo.sh
+  tags:
+    - creation
 
 - name: copy demo files
   synchronize:
@@ -63,6 +74,8 @@
     dest: "{{ onap_etc_path }}/eteshare/"
     recursive: yes
   delegate_to: "{{ inventory_hostname }}"
+  tags:
+    - creation
 
 - name: Start robot simulator image
   docker_container:

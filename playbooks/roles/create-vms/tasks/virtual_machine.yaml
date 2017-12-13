@@ -4,18 +4,30 @@
     name: "{{ (use_vm_base_name | bool) |
               ternary(vm_base_name + '-' + vm.value.short_name,
                       vm.value.short_name) }}"
+  tags:
+    - creation
+    - configuration
+    - inventory
 
 - name: initialize volumes_name fact
   set_fact:
     volumes_name: []
     server_sequence0: []
     server_sequence: []
+  tags:
+    - creation
+    - configuration
+    - inventory
 
 - name: generate sequence for server number
   set_fact:
     server_sequence0: "{{ server_sequence0 + [item | int] }}"
     server_sequence: "{{ server_sequence + [(item|int) + 1] }}"
   with_sequence: start=0 count="{{ vm.value.vm_number }}"
+  tags:
+    - creation
+    - configuration
+    - inventory
 
 - name: create necessary volumes
   include_tasks: volume.yaml
@@ -23,6 +35,10 @@
   when: (vm.value.volumes | length) > 0
   loop_control:
     loop_var: number_vm
+  tags:
+    - creation
+    - configuration
+    - inventory
 
 - name: "create {{ vm.key }} VM #{{ item }}"
   os_server:
@@ -39,6 +55,10 @@
     volumes: "{{ volumes_name[(item | int)] }}"
   register: server
   with_items: "{{ server_sequence0 }}"
+  tags:
+    - creation
+    - configuration
+    - inventory
 
 - name: "add {{ vm.key }} #{{ item }} to inventory"
   add_host:
@@ -48,15 +68,26 @@
     ansible_ssh_host: "{{ server.results[(item | int)].openstack.public_v4 }}"
     ansible_ssh_user: "{{ default_user }}"
   with_items: "{{ server_sequence0 }}"
+  tags:
+    - creation
+    - configuration
+    - inventory
 
 - name: create relevant dns records
   import_tasks: dnsaas.yaml
   when: use_dnsaas | bool
+  tags:
+    - creation
+    - dns
 
 # Today heat deployment supports only one instance
 - name: retrieve facts about installation
   set_fact:
     "{{ vm.value.ip_addr_fact }}": "{{ server.results.0.openstack.private_v4 }}"
+  tags:
+    - creation
+    - configuration
+    - inventory
 
 # TODO handle case with several volumes
 - name: "set fact volume_devs on {{ item.key }}"
@@ -69,3 +100,5 @@
     (vm.value.volumes is defined) and
     (vm.value.volumes | length) > 0
   with_items: "{{ server_sequence0 }}"
+  tags:
+    - creation

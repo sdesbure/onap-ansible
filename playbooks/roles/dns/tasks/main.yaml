@@ -17,6 +17,7 @@
     - vid_ip_addr
     - clamp_ip_addr
     - openo_ip_addr
+    - consul_ip_addr
 
 - name: install required packages
   include_tasks: install_DEBIAN.yaml

@@ -1,24 +1,32 @@
 ---
 onap_module_name: vid
 
+consul_agent_name: consul_agent
+consul_ui_port: 8500
+consul_volume: "{{ onap_etc_path }}/{{ onap_module_name }}/consul_agent"
+
 vid_docker: openecomp/vid
 vid_version: v1.1.1
 vid_repo: http://gerrit.onap.org/r/vid.git
 vid_branch: master
 
-vid_maria_name: vid-mariadb
-vid_container_name: vid-server
+vid_username: Default
+vid_password: AppPassword!1
+
+vid_maria_name: mariadb
+vid_container_name: vid
 vid_port: 8080
 
 vid_mysql_db: vid_openecomp_epsdk
 vid_maria_user: vidadmin
 vid_maria_password: 12dsf4!!*wxvsknjJJFBHBCd
 vid_db_root_password: sdf6(-dtuFygH*js5v487)
-vid_mariadb_volume: "{{ onap_etc_path }}/mysql"
+vid_mariadb_volume: "{{ onap_etc_path }}/{{ onap_module_name }}/data-mysql"
 
 containers:
   - "{{ default_docker_repo }}{{ maria_image }}:{{ maria_version }}"
   - "{{ nexus_docker_repo }}/{{ vid_docker }}:{{ vid_version }}"
+  - "{{ default_docker_repo }}{{ consul_image }}:{{ consul_version }}"
 
 volume_locations:
   - "{{ vid_mariadb_volume }}"
