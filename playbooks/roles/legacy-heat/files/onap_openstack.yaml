@@ -277,8 +277,6 @@ parameters:
     type: string
   sdnc_repo:
     type: string
-  clamp_repo:
-    type: string
   vnfsdk_repo:
     type: string
 
@@ -305,8 +303,6 @@ parameters:
   sdc_docker:
     type: string
   sdnc_docker:
-    type: string
-  clamp_docker:
     type: string
   msb_docker:
     type: string
@@ -364,8 +360,6 @@ parameters:
   sdc_branch:
     type: string
   sdnc_branch:
-    type: string
-  clamp_branch:
     type: string
   vnfsdk_branch:
     type: string

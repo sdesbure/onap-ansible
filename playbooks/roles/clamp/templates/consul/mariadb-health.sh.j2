@@ -1,0 +1,14 @@
+INFO=$(/consul/config/bin/mysqladmin --password='{{ clamp_db_root_password }}' -u root -h {{ clamp_maria_name }} ping 2>&1)
+if [ ${?} -eq 0 ]; then
+  if [ $(echo ${INFO} | grep alive | wc -l) -ge 1 ]; then
+    echo Success. Mariadb is alive. 2>&1
+    exit 0
+  else
+    echo Failed. Mariadb is running but cannot connect.
+    echo Error: ${INFO}
+    exit 1
+  fi
+else
+  echo Failed. Mariadb is not running. 2>&1
+  exit 2
+fi

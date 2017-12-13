@@ -1,0 +1,42 @@
+{
+  "advertise_addr": "{{ ansible_default_ipv4.address }}",
+  "advertise_addr_wan": "{{ ansible_ssh_host }}",
+  "bind_addr": "0.0.0.0",
+  "client_addr": "0.0.0.0",
+  "datacenter": "{{ consul_datacenter }}",
+  "data_dir": "/consul/data",
+  "enable_script_checks": true,
+  "leave_on_terminate": true,
+  "log_level": "DEBUG",
+  "node_name": "{{ ansible_hostname }}",
+  "retry_join": ["{{ hostvars[groups.consul.0]['ansible_default_ipv4']['address'] }}"],
+  "server": false,
+  "services": [
+    {
+      "name": "CLAMP - Server",
+      "tags": ["CLAMP"],
+      "address": "clamp.api.{{ dns_domain }}",
+      "port": {{ clamp_port }},
+      "checks": [{
+        "name": "HTTP API",
+        "http": "http://clamp.api.{{ dns_domain }}:{{ clamp_port }}/restservices/clds/v1/clds/healthcheck",
+        "header": {
+          "Accept": ["application/json"],
+          "Content-Type": ["application/json"]
+        },
+        "interval": "30s",
+        "timeout": "1s"
+      }]
+    },
+    {
+      "name": "CLAMP - MariaDB",
+      "tags": ["CLAMP"],
+      "checks": [{
+        "script": "/consul/config/scripts/mariadb-health.sh",
+        "interval": "30s",
+        "timeout": "1s"
+      }]
+    }
+  ],
+  "ui": true
+}

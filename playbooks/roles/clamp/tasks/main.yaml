@@ -1,5 +1,5 @@
 ---
-- name: create /opt/clamp directory
+- name: create clamp directory
   file:
     path: "{{ clamp_repo_path }}"
     state: directory
@@ -64,3 +64,10 @@
      - "{{ clamp_maria_name }}:clamp-mariadb-docker-instance"
   tags:
     - creation
+
+- name: add consul agent
+  import_tasks: consul_agent.yaml
+  tags:
+    - creation
+    - configuration
+    - consul

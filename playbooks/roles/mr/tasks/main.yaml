@@ -1,5 +1,9 @@
 ---
   # tasks file for roles/prepare_test
+- name: create message router directory
+  file:
+    path: "{{ onap_etc_path }}/{{ onap_module_name }}"
+    state: directory
 
 - name:
   file:

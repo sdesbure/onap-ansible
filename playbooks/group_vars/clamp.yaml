@@ -3,6 +3,9 @@ onap_module_name: clamp
 
 clamp_repo_path: "{{ onap_etc_path }}/{{ onap_module_name }}"
 
+consul_agent_name: consul_agent
+consul_ui_port: 8500
+consul_volume: "{{ onap_etc_path }}/consul_agent"
 
 clamp_container_name: clamp
 clamp_docker_image: onap/clamp
@@ -14,7 +17,7 @@ clamp_env: "{{clamp_repo_path}}/extra/docker/clamp/clamp.env"
 clamp_maria_name: clamp_db
 clamp_maria_version: 10.1.11
 clamp_maria_port: 3306
-volume_location: "{{ onap_etc_path }}/{{ onap_module_name }}/data-maria"
+volume_location: "{{ onap_etc_path }}/data-maria"
 clamp_maria_conf_volume: "{{ clamp_repo_path }}/extra/docker/mariadb/conf1"
 clamp_maria_sql_volume: "{{ clamp_repo_path }}/extra/sql"
 # harcoded password .. you can change it but then you must adapt the sql scripts
@@ -26,3 +29,4 @@ volume_locations:
 containers:
   - "{{ default_docker_repo }}{{ maria_image }}:{{ clamp_maria_version }}"
   - "{{ nexus_docker_repo }}/{{ clamp_docker_image }}:{{ clamp_version }}"
+  - "{{ default_docker_repo }}{{ consul_image }}:{{ consul_version }}"
